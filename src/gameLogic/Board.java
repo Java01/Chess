@@ -30,8 +30,8 @@ public class Board {
 	public static Board standardBoard () {
 		Board board = new Board ();
 		byte [] data = board.data;
-		for (int i = 0 ; i < data.length; i++) { //Initializes board to array of 0s
-			data [i] = 0;
+		for (int i = 0 ; i < data.length; i++) { //Initializes board to array of -1s
+			data [i] = -1;
 		}
 		//Initializing white pieces
 		data [21] = 2;
@@ -60,5 +60,37 @@ public class Board {
 		}
 		
 		return board;
+	}
+	
+	/**
+	 * Returns a 2D byte array representation of the board. 
+	 * @return
+	 */
+	public byte [][] to2dArray () {
+		byte [][] toReturn = new byte [8][8];
+		int index1 = 0, index2 = 0;
+		for (int i = 0 ; i < data.length; i++) {
+			if (this.inBoard(i)) {
+				toReturn [index1][index2] = data[i];
+				if (index2!=7) {
+					index2++;
+				} else {
+					index2=0;
+					index1++;
+				}
+			}
+			
+		}
+		return toReturn;
+	}
+	
+	/**
+	 * Returns whether or not the given index is a valid square in the array. 
+	 * @param index The index to be tested. 
+	 * @return True if the index points to a square on the playable board, 
+	 * false if the index points to a dummy square. 
+	 */
+	public boolean inBoard (int index) {
+		return (index>20 && index<99 && index%10!=0 && index%10!=9);
 	}
 }
