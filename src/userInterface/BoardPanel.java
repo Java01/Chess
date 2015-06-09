@@ -9,6 +9,7 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
 
+import tools.CommandLine;
 import databases.ImageDatabase;
 
 /**
@@ -22,6 +23,7 @@ public class BoardPanel extends JPanel {
 	 * The board to be rendered. 
 	 */
 	private Board board;
+	public Board getBoard () { return board; }
 	
 	/**
 	 * The size of each square, in pixels. 
@@ -40,6 +42,7 @@ public class BoardPanel extends JPanel {
 	
 	public BoardPanel (Board board) {
 		this.board = board;
+		new CommandLine (this);
 	}
 	
 	@Override

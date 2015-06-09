@@ -93,4 +93,56 @@ public class Board {
 	public boolean inBoard (int index) {
 		return (index>20 && index<99 && index%10!=0 && index%10!=9);
 	}
+	
+	
+	/**
+	 * Performs a given move given two array indexes. 
+	 * NOTE: This method does NOT check whether the move is LEGAL or not!
+	 * @param from The array index of the square the piece should move from.
+	 * @param to The array index of the square the piece should move to. 
+	 */
+	public void performMove (int from, int to) {
+		data [to] = data [from];
+		data [from] = -1;
+	}
+	
+	/**
+	 * Takes a position and returns the array index. 
+	 * @param position The given position, in the form of a string. EG: E4, F5, etc. Not case sensitive. 
+	 * @return The array index of the given position. 
+	 */
+	public int indexFromPosition (String position) {
+		position = position.toLowerCase();
+		int tens = Integer.parseInt(Character.toString(position.charAt(1)))+1;
+		int ones = numberFromLetter(position.charAt(0));
+		return 10*tens+ones;
+		
+	}
+	
+	/**
+	 * Returns the column number associated with a letter. 
+	 * @param letter The letter of the column we are interested in. 
+	 * @return The number, starting at 1 for A, of the column we are interested in. 
+	 */
+	public static int numberFromLetter (char letter) {
+		switch (letter) {
+		case 'a':
+			return 1;
+		case 'b':
+			return 2;
+		case 'c':
+			return 3;
+		case 'd':
+			return 4;
+		case 'e':
+			return 5;
+		case 'f':
+			return 6;
+		case 'g':
+			return 7;
+		case 'h':
+			return 8;
+		default: return 0;
+		}
+	}
 }
