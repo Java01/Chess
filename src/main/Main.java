@@ -7,8 +7,8 @@ import java.io.IOException;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
+import databases.ImageDatabase;
 import userInterface.BoardPanel;
-import userInterface.ImageDatabase;
 
 
 public class Main {
@@ -19,6 +19,7 @@ public class Main {
 			ImageDatabase.initImages();
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(null, "Failed to load images.");
+			e.printStackTrace();
 		}
 		
 		
