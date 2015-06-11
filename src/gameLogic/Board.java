@@ -111,12 +111,21 @@ public class Board {
 	 * @param position The given position, in the form of a string. EG: E4, F5, etc. Not case sensitive. 
 	 * @return The array index of the given position. 
 	 */
-	public int indexFromPosition (String position) {
+	public static int indexFromPosition (String position) {
 		position = position.toLowerCase();
 		int tens = Integer.parseInt(Character.toString(position.charAt(1)))+1;
 		int ones = numberFromLetter(position.charAt(0));
 		return 10*tens+ones;
-		
+	}
+	
+	/**
+	 * Takes a position and returns the array index. 
+	 * @param row The row of the given position as an integer. 
+	 * @param column The column of the given position as an integer. 
+	 * @return The array index of the specified position. 
+	 */
+	public static int indexFromPosition (int row, int column) {
+		return 10*row+column;
 	}
 	
 	/**
@@ -144,5 +153,16 @@ public class Board {
 			return 8;
 		default: return 0;
 		}
+	}
+	
+	/**
+	 * Takes an index of the data array and returns a corresponding position object. 
+	 * @param index The given index. 
+	 * @return The returned position. 
+	 */
+	public static Position positionFromIndex (int index) {
+		int row = (index/10)-1;
+		int column = index%10;
+		return new Position (row, column);
 	}
 }

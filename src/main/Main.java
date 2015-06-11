@@ -24,7 +24,7 @@ public class Main {
 		
 		
 		
-		JFrame frame = new JFrame ("Test");
+		JFrame frame = new JFrame ("Chess");
 		Board test = Board.standardBoard();
 		BoardPanel pane = new BoardPanel (test);
 		frame.add(pane);

@@ -1,5 +1,7 @@
 package tools;
 
+import gameLogic.Board;
+
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -54,12 +56,13 @@ public class CommandLine extends JFrame {
 		this.setSize(300,50);
 		this.setTitle("Command Line");
 		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		this.setAlwaysOnTop(true);
 		this.setVisible(true);
 	}
 
 	protected boolean execute(String text) {
 		String [] arr = text.split("-");
-		pane.getBoard().performMove(pane.getBoard().indexFromPosition(arr[0]), pane.getBoard().indexFromPosition(arr[1]));
+		pane.getBoard().performMove(Board.indexFromPosition(arr[0]), Board.indexFromPosition(arr[1]));
 		
 		pane.repaint();
 		return true;
