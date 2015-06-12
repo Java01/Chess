@@ -1,5 +1,8 @@
 package gameLogic;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Board {
 
 	/**
@@ -18,6 +21,25 @@ public class Board {
 	 */
 	private byte [] data = new byte [120]; 
 	
+	/**
+	 * True if it's white's turn to move, false if it's black. 
+	 */
+	private boolean whiteMove = true;
+	
+	/**
+	 * A number representing castling rights. 
+	 * 1 - WHITE KINGSIDE
+	 * 2 - WHITE QUEENSIDE
+	 * 4 - BLACK KINGSIDE
+	 * 8 - BLACK QUEENSIDE
+	 */
+	private byte castlingRights = 15;
+	
+
+	
+	
+
+
 	public Board () {
 		
 	}
@@ -64,7 +86,7 @@ public class Board {
 	
 	/**
 	 * Returns a 2D byte array representation of the board. 
-	 * @return
+	 * @return An 8*8 2D byte array. 
 	 */
 	public byte [][] to2dArray () {
 		byte [][] toReturn = new byte [8][8];
@@ -105,6 +127,106 @@ public class Board {
 		data [to] = data [from];
 		data [from] = -1;
 	}
+	
+	
+	/**
+	 * Returns all legal moves. 
+	 * @return A List of Move's, all of which are legal 
+	 * to be played in the current position. 
+	 */
+	public List <Move> getLegalMoves () {
+		List <Move> moves = new ArrayList <Move> ();
+		for (int i = 0 ; i < data.length; i++) {
+			byte piece = data [i];
+			if ( (!inBoard(i)) && piece!=-1) {
+				System.err.println("Piece in out-of-bounds area!");
+			}
+			if ((!isWhite(piece)&&whiteMove)||(isWhite(piece)&&!whiteMove)) {
+				continue;
+			}
+			switch (piece) {
+			case -1:break;
+			case 0: case 6: 
+				int [] surrounding = {-11, -10, -9, -1, 1, 9, 10, 11};
+				for (int square: surrounding) {
+					if (this.inBoard(i+square)) {
+						moves.add(new Move(i, i+square));
+					}
+				}
+				break;
+			case 1: case 7: 
+				new Thread (i, 1, this, moves).execute();
+				new Thread (i, 10, this, moves).execute();
+				new Thread (i, -1, this, moves).execute();
+				new Thread (i, -10, this, moves).execute();
+				new Thread (i, 11, this, moves).execute();
+				new Thread (i, 9, this, moves).execute();
+				new Thread (i, -11, this, moves).execute();
+				new Thread (i, -9, this, moves).execute();
+				break;
+			case 2: case 8: 
+				new Thread (i, 1, this, moves).execute();
+				new Thread (i, 10, this, moves).execute();
+				new Thread (i, -1, this, moves).execute();
+				new Thread (i, -10, this, moves).execute();
+				break;
+			case 3: case 9:
+				new Thread (i, 11, this, moves).execute();
+				new Thread (i, 9, this, moves).execute();
+				new Thread (i, -11, this, moves).execute();
+				new Thread (i, -9, this, moves).execute();
+				break;
+			case 4: case 10:
+				int [] squares = {-12, -21, -19, -8, 8, 12, 19, 21};
+				for (int square: squares) {
+					if (this.inBoard(i+square)) {
+						moves.add(new Move(i, i+square));
+					}
+				}
+				break;
+			case 5: //TODO White Pawn
+				break;
+			case 11: //TODO Black Pawn
+			}
+
+		}
+		return moves;
+	}
+	
+	/**
+	 * Returns whether or not a specified piece is white. 
+	 * @param piece An integer specifying the type of a piece. 
+	 * For full index, refer to the Javadoc of the data field. 
+	 * @return True if the piece is white, false if it's black. 
+	 */
+	public boolean isWhite (int piece) {
+		return piece<6;
+	}
+	
+	
+	public boolean isWhiteMove() {
+		return whiteMove;
+	}
+
+	public void changeTurn () {
+		whiteMove = (whiteMove)?false:true;
+	}
+	
+	public byte getCastlingRights () {
+		return castlingRights;
+	}
+	
+	/**
+	 * Changes the castling rights by a specified number. 
+	 * The castling rights always decreased whether the number
+	 * is positive or negative. 
+	 * @param increment The amount to change. 
+	 */
+	public void changeCastlingRights (int increment) {
+		castlingRights-=Math.abs(increment);
+	}
+
+	
 	
 	/**
 	 * Takes a position and returns the array index. 
@@ -165,4 +287,52 @@ public class Board {
 		int column = index%10;
 		return new Position (row, column);
 	}
+	
+	/**
+	 * A helper class to board. 
+	 * For any sliding piece (bishop, rook, queen), a thread
+	 * will find its legal moves given the placement of the other pieces on the board. 
+	 * @author kevinshao
+	 *
+	 */
+	private class Thread {
+		
+		private int increment; //The increment for the sliding piece, eg 10 for ROOK UP, 11 for BISHOP UP RIGHT. 
+		private int initialPosition; //The array index for the initial position of the piece. 
+		private Board board; //The board to be considered. 
+		private List <Move> list; //The list to place valid moves in. 
+		
+		Thread (int initial, int increment, Board board, List<Move> list) {
+			this.increment = increment;
+			this.board = board;
+			this.list = list;
+			initialPosition = initial;
+		}
+		
+		void execute () {
+			boolean running = true;
+			int considering = initialPosition + increment;
+			
+			while (running) {
+				if (board.inBoard(considering)) {
+					if (board.data[considering]==-1) {
+						this.addToMoves(considering);
+						considering+=increment;
+					} else {
+						running = false;
+						if (board.isWhite(board.data[considering])!=board.isWhite(board.data[initialPosition])) {
+							this.addToMoves(considering);
+						}
+					}
+				}
+			}
+		}
+		
+		private void addToMoves (int position) {
+			list.add(new Move(initialPosition, position));
+		}
+		
+		
+	}
+
 }
