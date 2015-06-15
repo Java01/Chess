@@ -99,7 +99,6 @@ public class Board {
 					index1++;
 				}
 			}
-			
 		}
 		return toReturn;
 	}
@@ -302,7 +301,7 @@ public class Board {
 	 * @return The array index of the specified position. 
 	 */
 	public static int indexFromPosition (int row, int column) {
-		return 10*row+column;
+		return 10*row+column+10;
 	}
 	
 	/**
