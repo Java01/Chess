@@ -27,5 +27,16 @@ public class Move {
 	public Position getTo () {
 		return Board.positionFromIndex(to);
 	}
+	
+	@Override
+	public boolean equals (Object other) {
+		Move m = (Move) other;
+		return this.from == m.from && this.to == m.to;
+	}
+	
+	@Override
+	public String toString () {
+		return Board.positionFromIndex(from).toString()+"-"+Board.positionFromIndex(to).toString();
+	}
 
 }

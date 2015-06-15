@@ -34,12 +34,10 @@ public class Board {
 	 * 8 - BLACK QUEENSIDE
 	 */
 	private byte castlingRights = 15;
-	
 
-	
-	
-
-
+	/**
+	 * Empty constructor. This class uses the factory pattern. 
+	 */
 	public Board () {
 		
 	}
@@ -128,6 +126,15 @@ public class Board {
 		data [from] = -1;
 	}
 	
+	/**
+	 * Performs a given move given a Move object. 
+	 * NOTE: This method does NOT check whether the move is LEGAL or not!
+	 * @param move The Move object. 
+	 */
+	public void performMove (Move move) {
+		this.performMove (move.getFrom().toIndex(),move.getTo().toIndex());
+	}
+	
 	
 	/**
 	 * Returns all legal moves. 
@@ -184,9 +191,35 @@ public class Board {
 					}
 				}
 				break;
-			case 5: //TODO White Pawn
+			case 5:
+				if (data[i+10]==-1) {
+					moves.add(new Move (i, i+10));
+					if (i/10==3 && data[i+20]==-1) {
+						moves.add(new Move(i, i+20));
+					}
+				}
+				if ((!this.isWhite(data[i+9])) && this.inBoard(i+9)) {
+					moves.add(new Move(i, i+9));
+				}
+				if ((!this.isWhite(data[i+11])) && this.inBoard(i+11)) {
+					moves.add(new Move(i, i+11));
+				}
+				
 				break;
-			case 11: //TODO Black Pawn
+			case 11: 
+				if (data[i-10]==-1) {
+					moves.add(new Move (i, i-10));
+					if (i/10==8 && data[i-20]==-1) {
+						moves.add(new Move(i, i-20));
+					}
+				}
+				if ((this.isWhite(data[i-9])) && this.inBoard(i-9)) {
+					moves.add(new Move(i, i-9));
+				}
+				if ((this.isWhite(data[i-11])) && this.inBoard(i-11)) {
+					moves.add(new Move(i, i-11));
+				}
+				break;
 			}
 
 		}
@@ -203,17 +236,39 @@ public class Board {
 		return piece<6;
 	}
 	
-	
+	/**
+	 * Returns whether or not it is white's turn to move
+	 * on this board. 
+	 * @return True if it's white's move, false if it's black's move. 
+	 */
 	public boolean isWhiteMove() {
 		return whiteMove;
 	}
 
+	/**
+	 * Changes the turn. 
+	 * Makes it black's move if it's white's, 
+	 * white's move if it's black's. 
+	 */
 	public void changeTurn () {
 		whiteMove = (whiteMove)?false:true;
 	}
 	
+	/**
+	 * Returns the castling rights. 
+	 * See castlingRights for how to parse the data. 
+	 * @return Castling rights for this game. 
+	 */
 	public byte getCastlingRights () {
 		return castlingRights;
+	}
+	
+	/**
+	 * Returns the byte array of the data. 
+	 * @return A byte array. 
+	 */
+	public byte [] getData () {
+		return data;
 	}
 	
 	/**
@@ -288,6 +343,28 @@ public class Board {
 		return new Position (row, column);
 	}
 	
+	
+	/**
+	 * Performs the reverse operation of numberFromLetter. 
+	 * @param number The number given. 
+	 * @return The character return. 
+	 */
+	public static char letterFromNumber (int number) {
+		switch (number) {
+		case 1: return 'a';
+		case 2: return 'b';
+		case 3: return 'c';
+		case 4: return 'd';
+		case 5: return 'e';
+		case 6: return 'f';
+		case 7: return 'g';
+		case 8: return 'h';
+		default: return 'i';
+
+		}
+	}
+	
+	
 	/**
 	 * A helper class to board. 
 	 * For any sliding piece (bishop, rook, queen), a thread
@@ -324,15 +401,17 @@ public class Board {
 							this.addToMoves(considering);
 						}
 					}
+				} else {
+					return;
 				}
+				
 			}
 		}
 		
 		private void addToMoves (int position) {
 			list.add(new Move(initialPosition, position));
 		}
-		
-		
+
 	}
 
 }

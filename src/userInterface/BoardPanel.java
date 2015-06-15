@@ -17,6 +17,7 @@ import databases.ImageDatabase;
  * @author kevinshao
  *
  */
+@SuppressWarnings("serial")
 public class BoardPanel extends JPanel {
 	
 	/**

@@ -1,6 +1,7 @@
 package tools;
 
 import gameLogic.Board;
+import gameLogic.Move;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -61,8 +62,22 @@ public class CommandLine extends JFrame {
 	}
 
 	protected boolean execute(String text) {
-		String [] arr = text.split("-");
-		pane.getBoard().performMove(Board.indexFromPosition(arr[0]), Board.indexFromPosition(arr[1]));
+		switch (text.charAt(0)) {
+		case '?':
+			text = text.substring(1, text.length());
+			System.out.println(pane.getBoard().getData()[Board.indexFromPosition(text)]);
+			break;
+		default:
+			String [] arr = text.split("-");
+			Move move = new Move (Board.indexFromPosition(arr[0]), Board.indexFromPosition(arr[1]));
+			if (pane.getBoard().getLegalMoves().contains(move)) {
+				System.out.println(move.toString());
+				pane.getBoard().performMove(move);
+			} else {
+				System.out.println("Rejected move: " + move.toString());
+			}
+			break;
+		}
 		
 		pane.repaint();
 		return true;
