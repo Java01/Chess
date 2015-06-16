@@ -67,6 +67,12 @@ public class CommandLine extends JFrame {
 			text = text.substring(1, text.length());
 			System.out.println(pane.getBoard().getData()[Board.indexFromPosition(text)]);
 			break;
+		case ':':
+			text = text.substring(1, text.length());
+			if (text.equals("ep")) {
+				System.out.println(Board.positionFromIndex(pane.getBoard().getEpSquare()).toString());
+			}
+			break;
 		default:
 			String [] arr = text.split("-");
 			Move move = new Move (Board.indexFromPosition(arr[0]), Board.indexFromPosition(arr[1]));

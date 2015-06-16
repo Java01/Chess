@@ -32,9 +32,35 @@ public class Board {
 	 * 2 - WHITE QUEENSIDE
 	 * 4 - BLACK KINGSIDE
 	 * 8 - BLACK QUEENSIDE
+	 * EG: In a position where white can castle to both sides
+	 * but black can only castle queenside, this field should be
+	 * 8 (black queenside) + 2 (white queenside) + 1 (white kingside) = 11. 
 	 */
 	private byte castlingRights = 15;
 
+	/**
+	 * The field indicating, if any, the square that is available for 
+	 * en passant capture. This field will contain the index of the 
+	 * square to move to if such a square exists, or 0 if the last 
+	 * move does not allow for an en passant capture. 
+	 */
+	private int epSquare = 0;
+	
+	/**
+	 * The halfmove clock, used for determining 50 move draw. 
+	 * This is incremented every time either player makes a move, 
+	 * and is reset every time a piece is captured or a pawn is advanced. 
+	 */
+	private int halfmoveClock = 0;
+	
+	/**
+	 * The move counter. This starts at 1, 
+	 * is incremented when Black makes a move, 
+	 * and can never be reset. 
+	 */
+	private int move = 1;
+	
+	
 	/**
 	 * Empty constructor. This class uses the factory pattern. 
 	 */
@@ -121,9 +147,27 @@ public class Board {
 	 * @param to The array index of the square the piece should move to. 
 	 */
 	public void performMove (int from, int to) {
+		if (data[to]!=-1 || data[from]%6 == 5) {
+			this.resetHalfmove();
+		} else {
+			this.incrementHalfmove();
+		}
+		
+		this.changeTurn();
+		
+		if (data[from]%6==5) {
+			if (Math.abs(from-to)==20) {
+				epSquare = this.isWhite(data[from])?to-10:to+10;
+			} else {
+				epSquare = 0;
+			}
+		} else {
+			epSquare = 0;
+		}
 		data [to] = data [from];
 		data [from] = -1;
-	}
+		
+		}
 	
 	/**
 	 * Performs a given move given a Move object. 
@@ -250,6 +294,9 @@ public class Board {
 	 * white's move if it's black's. 
 	 */
 	public void changeTurn () {
+		if (!whiteMove) {
+			move++;
+		}
 		whiteMove = (whiteMove)?false:true;
 	}
 	
@@ -269,6 +316,56 @@ public class Board {
 	public byte [] getData () {
 		return data;
 	}
+	
+	
+	/**
+	 * Returns the en passant square, in integer form (indicating the index). 
+	 * @return
+	 */
+	public int getEpSquare () {
+		return this.epSquare;
+	}
+	
+	/**
+	 * Increments the halfmove clock. 
+	 */
+	public void incrementHalfmove () {
+		halfmoveClock++;
+	}
+	
+	/**
+	 * Resets the halfmove clock. 
+	 */
+	public void resetHalfmove () {
+		halfmoveClock = 0;
+	}
+	
+	/**
+	 * Returns the number of halfmoves elapsed since last pawn advance or capture. 
+	 * @return The number of halfmoves. 
+	 */
+	public int getHalfmove () {
+		return this.halfmoveClock;
+	}
+	
+	/**
+	 * Returns the number of moves played in the game. 
+	 * @return The number of moves. 
+	 */
+	public int getMove () {
+		return move;
+	}
+	
+	/**
+	 * Increments the move counter. 
+	 * Call after black has made his move. 
+	 */
+	public void incrementMove () {
+		move++;
+	}
+	
+	
+	
 	
 	/**
 	 * Changes the castling rights by a specified number. 
@@ -311,22 +408,14 @@ public class Board {
 	 */
 	public static int numberFromLetter (char letter) {
 		switch (letter) {
-		case 'a':
-			return 1;
-		case 'b':
-			return 2;
-		case 'c':
-			return 3;
-		case 'd':
-			return 4;
-		case 'e':
-			return 5;
-		case 'f':
-			return 6;
-		case 'g':
-			return 7;
-		case 'h':
-			return 8;
+		case 'a': return 1;
+		case 'b': return 2;
+		case 'c': return 3;
+		case 'd': return 4;
+		case 'e': return 5;
+		case 'f': return 6;
+		case 'g': return 7;
+		case 'h': return 8;
 		default: return 0;
 		}
 	}

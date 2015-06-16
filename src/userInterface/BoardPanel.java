@@ -63,31 +63,31 @@ public class BoardPanel extends JPanel {
 				BufferedImage img = null;
 				switch (arr2d[i][j]) {
 				case -1: draw = false;
-				break;
+					break;
 				case 0: img = ImageDatabase.pieces.get("wk");
-				break;
+					break;
 				case 1: img = ImageDatabase.pieces.get("wq");
-				break;
+					break;
 				case 2: img = ImageDatabase.pieces.get("wr");
-				break;
+					break;
 				case 3: img = ImageDatabase.pieces.get("wb");
-				break;
+					break;
 				case 4: img = ImageDatabase.pieces.get("wn");
-				break;
+					break;
 				case 5: img = ImageDatabase.pieces.get("wp");
-				break;
+					break;
 				case 6: img = ImageDatabase.pieces.get("bk");
-				break;
+					break;
 				case 7: img = ImageDatabase.pieces.get("bq");
-				break;
+					break;
 				case 8: img = ImageDatabase.pieces.get("br");
-				break;
+					break;
 				case 9: img = ImageDatabase.pieces.get("bb");
-				break;
+					break;
 				case 10: img = ImageDatabase.pieces.get("bn");
-				break;
+					break;
 				case 11: img = ImageDatabase.pieces.get("bp");
-				break;
+					break;
 				}
 				if (draw) {
 					g.drawImage(img, j*SQUARE_SIZE+PADDING+PIECE_PADDING, 
@@ -110,12 +110,7 @@ public class BoardPanel extends JPanel {
 		byte [][] arr2d = this.board.to2dArray();
 		for (int i = 0 ; i < arr2d.length; i++) {
 			for (int j = 0 ; j < arr2d[i].length; j++) {
-				BufferedImage img = null;
-				if ((i+j)%2==0) {
-					img = ImageDatabase.blackSquare;
-				} else {
-					img = ImageDatabase.whiteSquare;
-				}
+				BufferedImage img = ((i+j)%2==0)?ImageDatabase.blackSquare:ImageDatabase.whiteSquare;
 				g.drawImage(img, j*SQUARE_SIZE+PADDING, (7-i)*SQUARE_SIZE+PADDING, SQUARE_SIZE, SQUARE_SIZE, this);
 				
 			}
