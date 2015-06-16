@@ -72,6 +72,15 @@ public class CommandLine extends JFrame {
 			if (text.equals("ep")) {
 				System.out.println(Board.positionFromIndex(pane.getBoard().getEpSquare()).toString());
 			}
+			if (text.equals("halfmove")) {
+				System.out.println(pane.getBoard().getHalfmove());
+			}
+			if (text.equals("move")) {
+				System.out.println(pane.getBoard().getMove());
+			}
+			if (text.equals("selected")) {
+				System.out.println(pane.getSelectedSquare().toString());
+			}
 			break;
 		default:
 			String [] arr = text.split("-");

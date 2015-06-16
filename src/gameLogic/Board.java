@@ -152,9 +152,9 @@ public class Board {
 		} else {
 			this.incrementHalfmove();
 		}
-		
+
 		this.changeTurn();
-		
+
 		if (data[from]%6==5) {
 			if (Math.abs(from-to)==20) {
 				epSquare = this.isWhite(data[from])?to-10:to+10;
@@ -166,8 +166,8 @@ public class Board {
 		}
 		data [to] = data [from];
 		data [from] = -1;
-		
-		}
+
+	}
 	
 	/**
 	 * Performs a given move given a Move object. 
@@ -363,10 +363,7 @@ public class Board {
 	public void incrementMove () {
 		move++;
 	}
-	
-	
-	
-	
+
 	/**
 	 * Changes the castling rights by a specified number. 
 	 * The castling rights always decreased whether the number
@@ -376,8 +373,6 @@ public class Board {
 	public void changeCastlingRights (int increment) {
 		castlingRights-=Math.abs(increment);
 	}
-
-	
 	
 	/**
 	 * Takes a position and returns the array index. 
@@ -399,6 +394,15 @@ public class Board {
 	 */
 	public static int indexFromPosition (int row, int column) {
 		return 10*row+column+10;
+	}
+	
+	/**
+	 * Takes a position and returns the array index. 
+	 * @param position The position as a position object. 
+	 * @return The array index of the specified position. 
+	 */
+	public static int indexFromPosition (Position position) {
+		return indexFromPosition (position.getRow(), position.getColumn());
 	}
 	
 	/**
@@ -431,7 +435,6 @@ public class Board {
 		return new Position (row, column);
 	}
 	
-	
 	/**
 	 * Performs the reverse operation of numberFromLetter. 
 	 * @param number The number given. 
@@ -451,7 +454,6 @@ public class Board {
 
 		}
 	}
-	
 	
 	/**
 	 * A helper class to board. 
@@ -492,14 +494,12 @@ public class Board {
 				} else {
 					return;
 				}
-				
 			}
 		}
 		
 		private void addToMoves (int position) {
 			list.add(new Move(initialPosition, position));
 		}
-
 	}
 
 }

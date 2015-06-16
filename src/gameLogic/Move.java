@@ -1,5 +1,10 @@
 package gameLogic;
 
+/**
+ * A class representing a chess move. 
+ * @author kevinshao
+ *
+ */
 public class Move {
 	
 	private int from, to;

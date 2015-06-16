@@ -1,10 +1,15 @@
 package userInterface;
 
 import gameLogic.Board;
+import gameLogic.Move;
+import gameLogic.Position;
 
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
@@ -41,9 +46,65 @@ public class BoardPanel extends JPanel {
 	 */
 	public static final int PIECE_PADDING = 8;
 	
-	public BoardPanel (Board board) {
+	/**
+	 * A position object representing the currently selected square. 
+	 * Null if no square is selected. 
+	 */
+	private Position selectedSquare = null;
+	
+	public BoardPanel (final Board board) {
 		this.board = board;
 		new CommandLine (this);
+		this.addMouseListener(new MouseListener() {
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				int mouseX = e.getX();
+				int mouseY = e.getY();
+				
+				mouseX -= PADDING;
+				mouseY -= PADDING;
+				
+				Position p = new Position (8-mouseY/SQUARE_SIZE, mouseX/SQUARE_SIZE+1);
+
+				if (selectedSquare == null) {
+					byte piece = board.getData()[Board.indexFromPosition(p)];
+					if (piece!=-1 && (board.isWhite(piece)==board.isWhiteMove())) {
+						selectedSquare = p;
+					}
+				} else {
+					Move m = new Move (
+							Board.indexFromPosition(selectedSquare), 
+							Board.indexFromPosition(p));
+					if (board.getLegalMoves().contains(m)) {
+						board.performMove(m);
+					}
+					selectedSquare = null;
+				}
+				BoardPanel.this.repaint();
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent arg0) {
+				
+			}
+
+			@Override
+			public void mouseExited(MouseEvent arg0) {
+				
+			}
+
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+				
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+				
+			}
+			
+		});
 	}
 	
 	@Override
@@ -103,6 +164,7 @@ public class BoardPanel extends JPanel {
 
 	private void drawBoardBorder(Graphics2D g) {
 		g.setStroke(new BasicStroke(3));
+		g.setColor(Color.BLACK);
 		g.drawRect(PADDING, PADDING, SQUARE_SIZE*8, SQUARE_SIZE*8);
 	}
 
@@ -112,9 +174,23 @@ public class BoardPanel extends JPanel {
 			for (int j = 0 ; j < arr2d[i].length; j++) {
 				BufferedImage img = ((i+j)%2==0)?ImageDatabase.blackSquare:ImageDatabase.whiteSquare;
 				g.drawImage(img, j*SQUARE_SIZE+PADDING, (7-i)*SQUARE_SIZE+PADDING, SQUARE_SIZE, SQUARE_SIZE, this);
-				
 			}
 		}
+		if (selectedSquare!=null) {
+			int row = selectedSquare.getRow();
+			int column = selectedSquare.getColumn();
+			g.setColor(Color.yellow);
+			g.fillRect((column-1)*SQUARE_SIZE+PADDING, (8-row)*SQUARE_SIZE+PADDING, SQUARE_SIZE, SQUARE_SIZE);
+		}
+
+	}
+
+	public Position getSelectedSquare() {
+		return selectedSquare;
+	}
+
+	public void setSelectedSquare(Position selectedSquare) {
+		this.selectedSquare = selectedSquare;
 	}
 	
 }
