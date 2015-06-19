@@ -60,6 +60,40 @@ public class Board {
 	 */
 	private int move = 1;
 	
+	/**
+	 * A flag indicating whether or not the legal moves have been generated for this board.
+	 * If so, the legal moves can simply be pulled through the getLegalMoves method. 
+	 */
+	private boolean movesGenerated = false;
+	
+	/**
+	 * The list of legal moves are to be stored here once generated. 
+	 */
+	private List<Move> legalMoves = null;
+	
+	private boolean evaluated = false;
+	
+	private double evaluation = 0d;
+	
+	
+	
+	
+	/**
+	 * The array holding the piece values. Indexed by the piece IDs described in the 
+	 * Javadoc for the data field. 
+	 */
+	public static final double [] PIECE_VALUES = {1000, 9, 5, 3, 3, 1,
+												-1000, -9, -5, -3, -3, -1};
+	
+	/**
+	 * The array holding the value of each piece's available move. Indexed
+	 * by the piece IDs described in the Javadoc for the data  field. 
+	 */
+	public static final double [] PIECE_MOVE_VALUES = {6, 1, 10, 15, 15, 8, 
+													-6, -1, -10, -15, -15, -8};
+	
+	
+	
 	
 	/**
 	 * Empty constructor. This class uses the factory pattern. 
@@ -67,8 +101,8 @@ public class Board {
 	public Board () {
 		
 	}
-	
-	
+
+
 	/**
 	 * Initializes a standard board in the beginning position. 
 	 * @return A fully initialized board object. 
@@ -106,6 +140,30 @@ public class Board {
 		}
 		
 		return board;
+	}
+	
+	/**
+	 * Initializes a board given another board and a move, executing the move. 
+	 * @param board The board to be copied. 
+	 * @param move The move to be executed. 
+	 * @return
+	 */
+	public static Board getBoardFromMove(Board board, Move move) {
+		Board newBoard = new Board();
+		for (int i = 0 ; i < 120; i++) {
+			newBoard.data[i] = board.data[i];
+		}
+		newBoard.whiteMove = board.whiteMove;
+		newBoard.castlingRights = board.castlingRights;
+		newBoard.epSquare = board.epSquare;
+		newBoard.halfmoveClock = board.halfmoveClock;
+		newBoard.move = board.move;
+		newBoard.movesGenerated = false;
+		newBoard.legalMoves = null;
+		newBoard.evaluated = false;
+		newBoard.evaluation = 0d;
+		newBoard.performMove(move);
+		return newBoard;
 	}
 	
 	/**
@@ -166,6 +224,18 @@ public class Board {
 		}
 		data [to] = data [from];
 		data [from] = -1;
+		
+		if (data[to]%6==5) {
+			if (to/10==2||to/10==9) {
+				if (data[to]==5) {
+					data[to]=1;
+				} else {
+					data[to]=7;
+				}
+			}
+		}
+		//Make sure to set movesGenerated to false. The board has changed. 
+		movesGenerated = false;
 
 	}
 	
@@ -184,7 +254,7 @@ public class Board {
 	 * @return A List of Move's, all of which are legal 
 	 * to be played in the current position. 
 	 */
-	public List <Move> getLegalMoves () {
+	public List <Move> obtainLegalMoves () {
 		List <Move> moves = new ArrayList <Move> ();
 		for (int i = 0 ; i < data.length; i++) {
 			byte piece = data [i];
@@ -199,8 +269,8 @@ public class Board {
 			case 0: case 6: 
 				int [] surrounding = {-11, -10, -9, -1, 1, 9, 10, 11};
 				for (int square: surrounding) {
-					if (this.inBoard(i+square)) {
-						moves.add(new Move(i, i+square));
+					if (this.inBoard(i+square)&&(this.isWhite(this.data[i+square])!=this.isWhite(piece)||this.data[i+square]==-1)) {
+						moves.add(new Move(i, i+square, data[i]));
 					}
 				}
 				break;
@@ -229,45 +299,69 @@ public class Board {
 			case 4: case 10:
 				int [] squares = {-12, -21, -19, -8, 8, 12, 19, 21};
 				for (int square: squares) {
-					if (this.inBoard(i+square)) {
-						moves.add(new Move(i, i+square));
+					if (this.inBoard(i+square)&&(this.isWhite(this.data[i+square])!=this.isWhite(piece)||(this.data[i+square]==-1))) {
+						moves.add(new Move(i, i+square, data[i]));
 					}
 				}
 				break;
 			case 5:
 				if (data[i+10]==-1) {
-					moves.add(new Move (i, i+10));
+					moves.add(new Move (i, i+10, data[i]));
 					if (i/10==3 && data[i+20]==-1) {
-						moves.add(new Move(i, i+20));
+						moves.add(new Move(i, i+20, data[i]));
 					}
 				}
 				if ((!this.isWhite(data[i+9])) && this.inBoard(i+9)) {
-					moves.add(new Move(i, i+9));
+					moves.add(new Move(i, i+9, data[i]));
 				}
 				if ((!this.isWhite(data[i+11])) && this.inBoard(i+11)) {
-					moves.add(new Move(i, i+11));
+					moves.add(new Move(i, i+11, data[i]));
 				}
 				
 				break;
 			case 11: 
 				if (data[i-10]==-1) {
-					moves.add(new Move (i, i-10));
+					moves.add(new Move (i, i-10, data[i]));
 					if (i/10==8 && data[i-20]==-1) {
-						moves.add(new Move(i, i-20));
+						moves.add(new Move(i, i-20, data[i]));
 					}
 				}
 				if ((this.isWhite(data[i-9])) && this.inBoard(i-9)) {
-					moves.add(new Move(i, i-9));
+					moves.add(new Move(i, i-9, data[i]));
 				}
 				if ((this.isWhite(data[i-11])) && this.inBoard(i-11)) {
-					moves.add(new Move(i, i-11));
+					moves.add(new Move(i, i-11, data[i]));
 				}
 				break;
 			}
 
 		}
+		this.legalMoves = moves;
+		this.movesGenerated = true;
 		return moves;
 	}
+	
+	/**
+	 * Evaluates the state of the board. Returns positive numbers for 
+	 * white's advantage, negative numbers for black's advantage. 
+	 * @return A double representing who's ahead, and by how much. 
+	 */
+	public double evaluate () {
+		double total = 0d;
+		for (int i = 0 ; i < data.length; i++) {
+			byte b = data[i];
+			if (this.inBoard(i)&&b!=-1) {
+				total+=PIECE_VALUES [b];
+			}
+		}
+		for (Move m: this.getLegalMoves()) {
+			total+=PIECE_MOVE_VALUES[m.getPiece()]/190;
+		}
+		evaluated = true;
+		evaluation = total;
+		return total;
+	}
+	
 	
 	/**
 	 * Returns whether or not a specified piece is white. 
@@ -276,7 +370,7 @@ public class Board {
 	 * @return True if the piece is white, false if it's black. 
 	 */
 	public boolean isWhite (int piece) {
-		return piece<6;
+		return piece<6&&piece!=-1;
 	}
 	
 	/**
@@ -372,6 +466,22 @@ public class Board {
 	 */
 	public void changeCastlingRights (int increment) {
 		castlingRights-=Math.abs(increment);
+	}
+	
+	public List<Move> getLegalMoves () {
+		if (movesGenerated) {
+			return legalMoves;
+		} else {
+			return obtainLegalMoves();
+		}
+	}
+	
+	public double getEvaluation () {
+		if (evaluated) {
+			return evaluation;
+		} else {
+			return evaluate();
+		}
 	}
 	
 	/**
@@ -498,8 +608,10 @@ public class Board {
 		}
 		
 		private void addToMoves (int position) {
-			list.add(new Move(initialPosition, position));
+			list.add(new Move(initialPosition, position, data[initialPosition]));
 		}
 	}
+
+
 
 }

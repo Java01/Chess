@@ -8,21 +8,36 @@ package gameLogic;
 public class Move {
 	
 	private int from, to;
+	/**
+	 * The piece making the move. 
+	 */
+	private int piece;
 	
-	public Move (int fromX, int fromY, int toX, int toY) {
+	
+	public int getPiece() {
+		return piece;
+	}
+
+	public void setPiece(int piece) {
+		this.piece = piece;
+	}
+
+	public Move (int fromX, int fromY, int toX, int toY, int piece) {
 		this (
 			Board.indexFromPosition(fromX, fromY), 
-			Board.indexFromPosition(toX, toY)
+			Board.indexFromPosition(toX, toY), 
+			piece
 			);
 	}
 	
-	public Move (String from, String to) {
-		this(Board.indexFromPosition(from), Board.indexFromPosition(to));
+	public Move (String from, String to, int piece) {
+		this(Board.indexFromPosition(from), Board.indexFromPosition(to), piece);
 	}
 	
-	public Move (int from, int to) {
+	public Move (int from, int to, int piece) {
 		this.from = from;
 		this.to = to;
+		this.piece = piece;
 	}
 	
 	public Position getFrom () {

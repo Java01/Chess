@@ -8,6 +8,8 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
@@ -54,7 +56,30 @@ public class BoardPanel extends JPanel {
 	
 	public BoardPanel (final Board board) {
 		this.board = board;
-		new CommandLine (this);
+		this.setFocusable(true);
+		this.addKeyListener(new KeyListener() {
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyChar()=='t') {
+					new CommandLine(BoardPanel.this);
+				}
+				
+			}
+
+			@Override
+			public void keyReleased(KeyEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void keyTyped(KeyEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		});
 		this.addMouseListener(new MouseListener() {
 
 			@Override
@@ -75,7 +100,8 @@ public class BoardPanel extends JPanel {
 				} else {
 					Move m = new Move (
 							Board.indexFromPosition(selectedSquare), 
-							Board.indexFromPosition(p));
+							Board.indexFromPosition(p), 
+							board.getData()[Board.indexFromPosition(selectedSquare)]);
 					if (board.getLegalMoves().contains(m)) {
 						board.performMove(m);
 					}

@@ -28,7 +28,7 @@ public class Main {
 		Board test = Board.standardBoard();
 		BoardPanel pane = new BoardPanel (test);
 		frame.add(pane);
-		frame.setSize(1280, 720);
+		frame.setSize(1280, 650);
 		frame.setVisible(true);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}

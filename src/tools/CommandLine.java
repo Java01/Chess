@@ -1,5 +1,6 @@
 package tools;
 
+import gameLogic.AI;
 import gameLogic.Board;
 import gameLogic.Move;
 
@@ -81,10 +82,25 @@ public class CommandLine extends JFrame {
 			if (text.equals("selected")) {
 				System.out.println(pane.getSelectedSquare().toString());
 			}
+			if (text.equals("best")) {
+				System.out.println(AI.getBestMove(pane.getBoard()));
+			}
+			if (text.equals("legal")) {
+				for (Move m: pane.getBoard().getLegalMoves()) {
+					System.out.println(m.toString());
+				}
+			}
+			if (text.equals("turn")) {
+				String s = pane.getBoard().isWhiteMove()?"White":"Black";
+				System.out.println(s);
+			}
+			if (text.equals("dobest")) {
+				pane.getBoard().performMove(AI.getBestMove(pane.getBoard()));
+			}
 			break;
 		default:
 			String [] arr = text.split("-");
-			Move move = new Move (Board.indexFromPosition(arr[0]), Board.indexFromPosition(arr[1]));
+			Move move = new Move (Board.indexFromPosition(arr[0]), Board.indexFromPosition(arr[1]), pane.getBoard().getData()[Board.indexFromPosition(arr[0])]);
 			if (pane.getBoard().getLegalMoves().contains(move)) {
 				System.out.println(move.toString());
 				pane.getBoard().performMove(move);
