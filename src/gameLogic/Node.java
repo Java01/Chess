@@ -13,7 +13,7 @@ public class Node {
 	private int childCount;
 	private boolean maxNode;
 	private List<Move> moves = null;
-	private int selected; //Which child node is the superior one right now. 
+	private int selected = -1; //Which child node is the superior one right now. 
 	
 	public Node (Node parent, Move move) {
 		this.parent = parent;
@@ -38,6 +38,7 @@ public class Node {
 		parent = null;
 		childOn = 0;
 		this.newNode = true;
+		this.maxNode = board.isWhiteMove();
 	}
 
 	public int getDepth() {

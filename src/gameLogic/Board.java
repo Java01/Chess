@@ -74,10 +74,7 @@ public class Board {
 	private boolean evaluated = false;
 	
 	private double evaluation = 0d;
-	
-	
-	
-	
+
 	/**
 	 * The array holding the piece values. Indexed by the piece IDs described in the 
 	 * Javadoc for the data field. 
@@ -91,9 +88,6 @@ public class Board {
 	 */
 	public static final double [] PIECE_MOVE_VALUES = {6, 1, 10, 15, 15, 8, 
 													-6, -1, -10, -15, -15, -8};
-	
-	
-	
 	
 	/**
 	 * Empty constructor. This class uses the factory pattern. 
@@ -149,6 +143,12 @@ public class Board {
 	 * @return
 	 */
 	public static Board getBoardFromMove(Board board, Move move) {
+		Board newBoard = cloneBoard (board);
+		newBoard.performMove(move);
+		return newBoard;
+	}
+	
+	public static Board cloneBoard (Board board) {
 		Board newBoard = new Board();
 		for (int i = 0 ; i < 120; i++) {
 			newBoard.data[i] = board.data[i];
@@ -162,7 +162,6 @@ public class Board {
 		newBoard.legalMoves = null;
 		newBoard.evaluated = false;
 		newBoard.evaluation = 0d;
-		newBoard.performMove(move);
 		return newBoard;
 	}
 	
@@ -234,9 +233,9 @@ public class Board {
 				}
 			}
 		}
-		//Make sure to set movesGenerated to false. The board has changed. 
+		//Make sure to set movesGenerated and evaluated to false. The board has changed. 
 		movesGenerated = false;
-
+		evaluated = false;
 	}
 	
 	/**
@@ -311,10 +310,10 @@ public class Board {
 						moves.add(new Move(i, i+20, data[i]));
 					}
 				}
-				if ((!this.isWhite(data[i+9])) && this.inBoard(i+9)) {
+				if ((!this.isWhite(data[i+9])) && this.inBoard(i+9) && data[i+9]!=-1) {
 					moves.add(new Move(i, i+9, data[i]));
 				}
-				if ((!this.isWhite(data[i+11])) && this.inBoard(i+11)) {
+				if ((!this.isWhite(data[i+11])) && this.inBoard(i+11) && data[i+11]!=-1) {
 					moves.add(new Move(i, i+11, data[i]));
 				}
 				
@@ -357,6 +356,11 @@ public class Board {
 		for (Move m: this.getLegalMoves()) {
 			total+=PIECE_MOVE_VALUES[m.getPiece()]/190;
 		}
+		Board b = cloneBoard (this);
+		b.changeTurn();
+		for (Move m: b.getLegalMoves()) {
+			total+=PIECE_MOVE_VALUES[m.getPiece()]/190;
+		}
 		evaluated = true;
 		evaluation = total;
 		return total;
@@ -395,12 +399,13 @@ public class Board {
 	}
 	
 	/**
-	 * Returns the castling rights. 
-	 * See castlingRights for how to parse the data. 
-	 * @return Castling rights for this game. 
+	 * Returns the castling rights for a given side and color. 
+	 * Give 0 for white kingside, 1 for white queenside, 
+	 * 2 for black kingside, and 3 for black queenside. 
+	 * @return Castling rights for the given side and color
 	 */
-	public byte getCastlingRights () {
-		return castlingRights;
+	public int getCastlingRights (int position) {
+		return (castlingRights >> position) & 1;
 	}
 	
 	/**

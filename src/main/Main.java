@@ -1,5 +1,6 @@
 package main;
 
+import gameLogic.AI;
 import gameLogic.Board;
 
 import java.io.IOException;
@@ -21,7 +22,7 @@ public class Main {
 			JOptionPane.showMessageDialog(null, "Failed to load images.");
 			e.printStackTrace();
 		}
-		
+
 		
 		
 		JFrame frame = new JFrame ("Chess");

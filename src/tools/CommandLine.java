@@ -20,6 +20,7 @@ public class CommandLine extends JFrame {
 	private static final long serialVersionUID = -7107805443231267535L;
 	
 	BoardPanel pane;
+	String last;
 	
 	public CommandLine (BoardPanel pane) {
 		this.pane = pane;
@@ -33,6 +34,9 @@ public class CommandLine extends JFrame {
 					if (CommandLine.this.execute (text.getText())) {
 						text.setText("");
 					}
+				}
+				if (e.getKeyCode()==KeyEvent.VK_DOWN||e.getKeyCode()==KeyEvent.VK_UP) {
+					text.setText(last);
 				}
 			}
 
@@ -51,6 +55,7 @@ public class CommandLine extends JFrame {
 			
 		});
 		
+		
 		this.add(text);
 		
 		
@@ -63,6 +68,7 @@ public class CommandLine extends JFrame {
 	}
 
 	protected boolean execute(String text) {
+		last = text;
 		switch (text.charAt(0)) {
 		case '?':
 			text = text.substring(1, text.length());
@@ -96,6 +102,9 @@ public class CommandLine extends JFrame {
 			}
 			if (text.equals("dobest")) {
 				pane.getBoard().performMove(AI.getBestMove(pane.getBoard()));
+			}
+			if (text.equals("evaluate")) {
+				System.out.println(pane.getBoard().getEvaluation());
 			}
 			break;
 		default:
