@@ -8,7 +8,35 @@ import java.util.List;
 public class AI {
 	
 	
-
+	/**
+	 * Given a board, return an integer that represents a depth of 
+	 * search that can be completed in a reasonable time. 
+	 * @param board
+	 * @return
+	 */
+	public static int getBestDepth (Board board) {
+		int moves1 = board.getLegalMoves().size();
+		Board board2 = Board.cloneBoard(board);
+		board2.changeTurn();
+		int moves2 = board2.getLegalMoves().size();
+		int total = moves1 * moves2;
+		if (total > 1000) {
+			return 5;
+		}
+		if (total > 700) {
+			return 6;
+		}
+		if (total > 500) {
+			return 6;
+		}
+		if (total > 300) {
+			return 7;
+		}
+		if (total > 100) {
+			return 7;
+		}
+		return 8;
+	}
 	
 	/**
 	 * Returns the best move using alpha beta pruning. 
@@ -22,8 +50,7 @@ public class AI {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-//		System.out.println("Getting best move");
-		int depth = 6; //This will change
+		int depth = getBestDepth (board);
 		boolean finished = false;
 		Node parent = new Node (board);
 		Node activeNode = parent;

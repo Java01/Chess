@@ -1,5 +1,6 @@
 package userInterface;
 
+import gameLogic.AI;
 import gameLogic.Board;
 import gameLogic.Move;
 import gameLogic.Position;
@@ -33,6 +34,10 @@ public class BoardPanel extends JPanel {
 	private Board board;
 	public Board getBoard () { return board; }
 	
+	
+	private boolean whiteAuto = true;
+	private boolean blackAuto = true;
+	
 	/**
 	 * The size of each square, in pixels. 
 	 */
@@ -64,73 +69,80 @@ public class BoardPanel extends JPanel {
 				if (e.getKeyChar()=='t') {
 					new CommandLine(BoardPanel.this);
 				}
-				
 			}
 
 			@Override
-			public void keyReleased(KeyEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}
+			public void keyReleased(KeyEvent arg0) {}
 
 			@Override
-			public void keyTyped(KeyEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}
+			public void keyTyped(KeyEvent arg0) {}
 			
 		});
 		this.addMouseListener(new MouseListener() {
 
 			@Override
-			public void mouseClicked(MouseEvent e) {
-				int mouseX = e.getX();
-				int mouseY = e.getY();
-				
-				mouseX -= PADDING;
-				mouseY -= PADDING;
-				
-				Position p = new Position (8-mouseY/SQUARE_SIZE, mouseX/SQUARE_SIZE+1);
+			public void mouseClicked(final MouseEvent e) {
+				new Thread (new Runnable () {
+					@Override
+					public void run () {
+						int mouseX = e.getX();
+						int mouseY = e.getY();
+						
+						mouseX -= PADDING;
+						mouseY -= PADDING;
+						
+						Position p = new Position (8-mouseY/SQUARE_SIZE, mouseX/SQUARE_SIZE+1);
 
-				if (selectedSquare == null) {
-					byte piece = board.getData()[Board.indexFromPosition(p)];
-					if (piece!=-1 && (board.isWhite(piece)==board.isWhiteMove())) {
-						selectedSquare = p;
+						if (selectedSquare == null) {
+							byte piece = board.getData()[Board.indexFromPosition(p)];
+							if (piece!=-1 && (board.isWhite(piece)==board.isWhiteMove())) {
+								selectedSquare = p;
+							}
+						} else {
+							Move m = new Move (
+									Board.indexFromPosition(selectedSquare), 
+									Board.indexFromPosition(p), 
+									board.getData()[Board.indexFromPosition(selectedSquare)]);
+							if (board.getLegalMoves().contains(m)) {
+								board.performMove(m);
+								BoardPanel.this.repaint();
+								BoardPanel.this.checkAuto();
+							}
+							selectedSquare = null;
+						}
+						BoardPanel.this.repaint();
 					}
-				} else {
-					Move m = new Move (
-							Board.indexFromPosition(selectedSquare), 
-							Board.indexFromPosition(p), 
-							board.getData()[Board.indexFromPosition(selectedSquare)]);
-					if (board.getLegalMoves().contains(m)) {
-						board.performMove(m);
-					}
-					selectedSquare = null;
-				}
-				BoardPanel.this.repaint();
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
+				}).start();
 				
 			}
 
 			@Override
-			public void mouseExited(MouseEvent arg0) {
-				
-			}
+			public void mouseEntered(MouseEvent arg0) {}
 
 			@Override
-			public void mousePressed(MouseEvent arg0) {
-				
-			}
+			public void mouseExited(MouseEvent arg0) {}
 
 			@Override
-			public void mouseReleased(MouseEvent arg0) {
-				
-			}
+			public void mousePressed(MouseEvent arg0) {}
+
+			@Override
+			public void mouseReleased(MouseEvent arg0) {}
 			
 		});
+		this.repaint();
+	}
+	
+	/**
+	 * Checks whether an automatic move is called for. 
+	 */
+	public void checkAuto () {
+		boolean turn = board.isWhiteMove();
+		if ((whiteAuto&&turn)||(blackAuto&&!turn)) {
+			board.performMove(AI.getBestMove(board));
+			this.repaint();
+			checkAuto ();
+		}
+		
 	}
 	
 	@Override
@@ -218,5 +230,22 @@ public class BoardPanel extends JPanel {
 	public void setSelectedSquare(Position selectedSquare) {
 		this.selectedSquare = selectedSquare;
 	}
+
+	public boolean isWhiteAuto() {
+		return whiteAuto;
+	}
+
+	public void setWhiteAuto(boolean whiteAuto) {
+		this.whiteAuto = whiteAuto;
+	}
+
+	public boolean isBlackAuto() {
+		return blackAuto;
+	}
+
+	public void setBlackAuto(boolean blackAuto) {
+		this.blackAuto = blackAuto;
+	}
 	
+
 }

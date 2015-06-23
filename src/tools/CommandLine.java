@@ -65,14 +65,16 @@ public class CommandLine extends JFrame {
 		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		this.setAlwaysOnTop(true);
 		this.setVisible(true);
+		
 	}
 
-	protected boolean execute(String text) {
-		last = text;
+	protected boolean execute(String input) {
+		last = input;
+		String text = input.toLowerCase();
 		switch (text.charAt(0)) {
 		case '?':
-			text = text.substring(1, text.length());
-			System.out.println(pane.getBoard().getData()[Board.indexFromPosition(text)]);
+			String strip = text.substring(1, text.length());
+			System.out.println(pane.getBoard().getData()[Board.indexFromPosition(strip)]);
 			break;
 		case ':':
 			text = text.substring(1, text.length());
@@ -105,6 +107,17 @@ public class CommandLine extends JFrame {
 			}
 			if (text.equals("evaluate")) {
 				System.out.println(pane.getBoard().getEvaluation());
+			}
+			break;
+		case '$':
+			String [] array = text.substring(1).split(" ");
+			String key = array[0];
+			String val = array[1];
+			if (key.equals("bauto")) {
+				pane.setBlackAuto(Boolean.parseBoolean(val));
+			}
+			if (key.equals("wauto")) {
+				pane.setWhiteAuto(Boolean.parseBoolean(val));
 			}
 			break;
 		default:

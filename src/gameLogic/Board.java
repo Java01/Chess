@@ -74,6 +74,10 @@ public class Board {
 	private boolean evaluated = false;
 	
 	private double evaluation = 0d;
+	
+
+	
+
 
 	/**
 	 * The array holding the piece values. Indexed by the piece IDs described in the 
@@ -86,9 +90,9 @@ public class Board {
 	 * The array holding the value of each piece's available move. Indexed
 	 * by the piece IDs described in the Javadoc for the data  field. 
 	 */
-	public static final double [] PIECE_MOVE_VALUES = {6, 1, 10, 15, 15, 8, 
-													-6, -1, -10, -15, -15, -8};
-	
+	public static final double [] PIECE_MOVE_VALUES = {6, .5, 10, 15, 20, 8, 
+													-6, -.5, -10, -15, -20, -8};
+
 	/**
 	 * Empty constructor. This class uses the factory pattern. 
 	 */
@@ -148,6 +152,11 @@ public class Board {
 		return newBoard;
 	}
 	
+	/**
+	 * Returns a deep copy of the given board. 
+	 * @param board The board to copy. 
+	 * @return The deep copy. 
+	 */
 	public static Board cloneBoard (Board board) {
 		Board newBoard = new Board();
 		for (int i = 0 ; i < 120; i++) {
@@ -212,17 +221,23 @@ public class Board {
 
 		this.changeTurn();
 
-		if (data[from]%6==5) {
+		data [to] = data [from];
+		data [from] = -1;
+		
+		if (to==epSquare) {
+			data[this.getEpTarget()]=-1;
+		}
+		
+		if (data[to]%6==5) {
 			if (Math.abs(from-to)==20) {
-				epSquare = this.isWhite(data[from])?to-10:to+10;
+				epSquare = this.isWhite(data[to])?to-10:to+10;
 			} else {
 				epSquare = 0;
 			}
 		} else {
 			epSquare = 0;
 		}
-		data [to] = data [from];
-		data [from] = -1;
+		
 		
 		if (data[to]%6==5) {
 			if (to/10==2||to/10==9) {
@@ -236,6 +251,7 @@ public class Board {
 		//Make sure to set movesGenerated and evaluated to false. The board has changed. 
 		movesGenerated = false;
 		evaluated = false;
+
 	}
 	
 	/**
@@ -266,34 +282,30 @@ public class Board {
 			switch (piece) {
 			case -1:break;
 			case 0: case 6: 
-				int [] surrounding = {-11, -10, -9, -1, 1, 9, 10, 11};
-				for (int square: surrounding) {
+				int [] king = {-11, -10, -9, -1, 1, 9, 10, 11};
+				for (int square: king) {
 					if (this.inBoard(i+square)&&(this.isWhite(this.data[i+square])!=this.isWhite(piece)||this.data[i+square]==-1)) {
 						moves.add(new Move(i, i+square, data[i]));
 					}
 				}
 				break;
 			case 1: case 7: 
-				new Thread (i, 1, this, moves).execute();
-				new Thread (i, 10, this, moves).execute();
-				new Thread (i, -1, this, moves).execute();
-				new Thread (i, -10, this, moves).execute();
-				new Thread (i, 11, this, moves).execute();
-				new Thread (i, 9, this, moves).execute();
-				new Thread (i, -11, this, moves).execute();
-				new Thread (i, -9, this, moves).execute();
+				int [] queen = {-11, -10, -9, -1, 1, 9, 10, 11};
+				for (int square: queen) {
+					new Thread (i, square, this, moves).execute();
+				}
 				break;
 			case 2: case 8: 
-				new Thread (i, 1, this, moves).execute();
-				new Thread (i, 10, this, moves).execute();
-				new Thread (i, -1, this, moves).execute();
-				new Thread (i, -10, this, moves).execute();
+				int [] rook = {1, 10, -1, -10};
+				for (int square: rook) {
+					new Thread (i, square, this, moves).execute();
+				}
 				break;
 			case 3: case 9:
-				new Thread (i, 11, this, moves).execute();
-				new Thread (i, 9, this, moves).execute();
-				new Thread (i, -11, this, moves).execute();
-				new Thread (i, -9, this, moves).execute();
+				int [] bishop = {11, 9, -11, -9};
+				for (int square: bishop) {
+					new Thread (i, square, this, moves).execute();
+				}
 				break;
 			case 4: case 10:
 				int [] squares = {-12, -21, -19, -8, 8, 12, 19, 21};
@@ -310,10 +322,10 @@ public class Board {
 						moves.add(new Move(i, i+20, data[i]));
 					}
 				}
-				if ((!this.isWhite(data[i+9])) && this.inBoard(i+9) && data[i+9]!=-1) {
+				if ( ((!this.isWhite(data[i+9])) && this.inBoard(i+9) && data[i+9]!=-1) || this.epSquare==i+9) {
 					moves.add(new Move(i, i+9, data[i]));
 				}
-				if ((!this.isWhite(data[i+11])) && this.inBoard(i+11) && data[i+11]!=-1) {
+				if (((!this.isWhite(data[i+11])) && this.inBoard(i+11) && data[i+11]!=-1)|| this.epSquare==i+11) {
 					moves.add(new Move(i, i+11, data[i]));
 				}
 				
@@ -325,10 +337,10 @@ public class Board {
 						moves.add(new Move(i, i-20, data[i]));
 					}
 				}
-				if ((this.isWhite(data[i-9])) && this.inBoard(i-9)) {
+				if (((this.isWhite(data[i-9])) && this.inBoard(i-9))|| this.epSquare==i-9) {
 					moves.add(new Move(i, i-9, data[i]));
 				}
-				if ((this.isWhite(data[i-11])) && this.inBoard(i-11)) {
+				if (((this.isWhite(data[i-11])) && this.inBoard(i-11))|| this.epSquare==i-11) {
 					moves.add(new Move(i, i-11, data[i]));
 				}
 				break;
@@ -351,6 +363,17 @@ public class Board {
 			byte b = data[i];
 			if (this.inBoard(i)&&b!=-1) {
 				total+=PIECE_VALUES [b];
+			}
+			if (b%6==5) {
+				int rank;
+				double coef = .1;
+				if (b>6) {
+					rank = 9-(i/10);
+					total+=rank*coef;
+				} else {
+					rank = (i/10)-2;
+					total+=rank*coef;
+				}
 			}
 		}
 		for (Move m: this.getLegalMoves()) {
@@ -490,6 +513,15 @@ public class Board {
 	}
 	
 	/**
+	 * Returns the piece targeted by an ep move, ie, the pawn to be taken. 
+	 * @return
+	 */
+	public int getEpTarget () {
+		return (this.epSquare/10==3)?this.epSquare+10:this.epSquare-10;
+	}
+
+	
+	/**
 	 * Takes a position and returns the array index. 
 	 * @param position The given position, in the form of a string. EG: E4, F5, etc. Not case sensitive. 
 	 * @return The array index of the given position. 
@@ -591,6 +623,9 @@ public class Board {
 			initialPosition = initial;
 		}
 		
+		/**
+		 * Runs the thread, and pushes any legal moves to the list. 
+		 */
 		void execute () {
 			boolean running = true;
 			int considering = initialPosition + increment;
@@ -616,7 +651,5 @@ public class Board {
 			list.add(new Move(initialPosition, position, data[initialPosition]));
 		}
 	}
-
-
 
 }
