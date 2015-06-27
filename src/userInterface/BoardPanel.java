@@ -2,6 +2,7 @@ package userInterface;
 
 import gameLogic.AI;
 import gameLogic.Board;
+import gameLogic.IllegalMoveException;
 import gameLogic.Move;
 import gameLogic.Position;
 
@@ -35,8 +36,14 @@ public class BoardPanel extends JPanel {
 	public Board getBoard () { return board; }
 	
 	
-	private boolean whiteAuto = true;
-	private boolean blackAuto = true;
+	private boolean whiteAuto = false;
+	private boolean blackAuto = false;
+	
+	/**
+	 * This field will contain information regarding the piece, if any, that is 
+	 * currently sliding on this BoardPanel. 
+	 */
+	private Transit transit = null;
 	
 	/**
 	 * The size of each square, in pixels. 
@@ -82,37 +89,62 @@ public class BoardPanel extends JPanel {
 
 			@Override
 			public void mouseClicked(final MouseEvent e) {
-				new Thread (new Runnable () {
-					@Override
-					public void run () {
-						int mouseX = e.getX();
-						int mouseY = e.getY();
-						
-						mouseX -= PADDING;
-						mouseY -= PADDING;
-						
-						Position p = new Position (8-mouseY/SQUARE_SIZE, mouseX/SQUARE_SIZE+1);
+				if (transit==null) {
+					new Thread (new Runnable () {
+						@Override
+						public void run () {
+							int mouseX = e.getX();
+							int mouseY = e.getY();
+							
+							mouseX -= PADDING;
+							mouseY -= PADDING;
+							
+							Position p = new Position (8-mouseY/SQUARE_SIZE, mouseX/SQUARE_SIZE+1);
 
-						if (selectedSquare == null) {
-							byte piece = board.getData()[Board.indexFromPosition(p)];
-							if (piece!=-1 && (board.isWhite(piece)==board.isWhiteMove())) {
-								selectedSquare = p;
+							if (selectedSquare == null) {
+								byte piece = board.getData()[Board.indexFromPosition(p)];
+								if (piece!=-1 && (board.isWhite(piece)==board.isWhiteMove())) {
+									selectedSquare = p;
+								}
+							} else {
+								int from = Board.indexFromPosition(selectedSquare);
+								int to = Board.indexFromPosition(p);
+								Move m = new Move (
+										Board.indexFromPosition(selectedSquare), 
+										Board.indexFromPosition(p), 
+										board.getData()[Board.indexFromPosition(selectedSquare)]);
+								if (board.getLegalMoves(true).contains(m)) {
+									transit = new Transit (from, to, board.getData()[from], board.getData()[to]);
+									boolean moveExecuted = true;
+									try {
+										board.performMove(m, true);
+									} catch (IllegalMoveException e) {
+										moveExecuted = false;
+									}
+									if (moveExecuted) {
+										for (int i = 0; i < transit.getTotal(); i++) {
+											transit.next ();
+											BoardPanel.this.repaint ();
+											try {
+												Thread.sleep(transit.getSleepTime());
+											} catch (InterruptedException e1) {
+												e1.printStackTrace();
+											}
+										}
+									} else {
+										transit = null;
+									}
+									transit = null;
+									BoardPanel.this.repaint();
+									BoardPanel.this.checkAuto();
+								}
+								selectedSquare = null;
 							}
-						} else {
-							Move m = new Move (
-									Board.indexFromPosition(selectedSquare), 
-									Board.indexFromPosition(p), 
-									board.getData()[Board.indexFromPosition(selectedSquare)]);
-							if (board.getLegalMoves().contains(m)) {
-								board.performMove(m);
-								BoardPanel.this.repaint();
-								BoardPanel.this.checkAuto();
-							}
-							selectedSquare = null;
+							BoardPanel.this.repaint();
 						}
-						BoardPanel.this.repaint();
-					}
-				}).start();
+					}).start();
+				}
+				
 				
 			}
 
@@ -138,7 +170,31 @@ public class BoardPanel extends JPanel {
 	public void checkAuto () {
 		boolean turn = board.isWhiteMove();
 		if ((whiteAuto&&turn)||(blackAuto&&!turn)) {
-			board.performMove(AI.getBestMove(board));
+			Move m = AI.getBestMove(board);
+			int from = m.getFrom().toIndex();
+			int to = m.getTo().toIndex();
+			transit = new Transit (from, to, board.getData()[from], board.getData()[to]);
+			boolean moveExecuted = true;
+			try {
+				board.performMove(m, true);
+			} catch (IllegalMoveException e) {
+				moveExecuted = false;
+			}
+			if (moveExecuted) {
+				for (int i = 0; i < transit.getTotal(); i++) {
+					transit.next ();
+					BoardPanel.this.repaint ();
+					try {
+						Thread.sleep(transit.getSleepTime());
+					} catch (InterruptedException e1) {
+						e1.printStackTrace();
+					}
+				}
+			} else {
+				transit = null;
+				System.out.println("Computer decided on an illegal move. ");
+			}
+			transit = null;
 			this.repaint();
 			checkAuto ();
 		}
@@ -159,35 +215,23 @@ public class BoardPanel extends JPanel {
 		for (int i = 0 ; i < arr2d.length; i++) {
 			for (int j = 0 ; j < arr2d[i].length; j++) {
 				draw = true;
+				byte val = arr2d[i][j];
 				BufferedImage img = null;
-				switch (arr2d[i][j]) {
-				case -1: draw = false;
-					break;
-				case 0: img = ImageDatabase.pieces.get("wk");
-					break;
-				case 1: img = ImageDatabase.pieces.get("wq");
-					break;
-				case 2: img = ImageDatabase.pieces.get("wr");
-					break;
-				case 3: img = ImageDatabase.pieces.get("wb");
-					break;
-				case 4: img = ImageDatabase.pieces.get("wn");
-					break;
-				case 5: img = ImageDatabase.pieces.get("wp");
-					break;
-				case 6: img = ImageDatabase.pieces.get("bk");
-					break;
-				case 7: img = ImageDatabase.pieces.get("bq");
-					break;
-				case 8: img = ImageDatabase.pieces.get("br");
-					break;
-				case 9: img = ImageDatabase.pieces.get("bb");
-					break;
-				case 10: img = ImageDatabase.pieces.get("bn");
-					break;
-				case 11: img = ImageDatabase.pieces.get("bp");
-					break;
+				if (transit!=null && transit.getFrom() == (Board.indexFromPosition(i+1, j+1))) {
+					draw = false;
 				}
+				if (transit != null && transit.getTo() == Board.indexFromPosition(i+1, j+1)) {
+					draw = true;
+					val = (byte) transit.getPieceTo();
+				}
+				
+				if (val==-1) {
+					draw = false;
+				} else {
+					img = ImageDatabase.pieceFromNumber (val);
+				}
+
+
 				if (draw) {
 					g.drawImage(img, j*SQUARE_SIZE+PADDING+PIECE_PADDING, 
 									(7-i)*SQUARE_SIZE+PADDING+PIECE_PADDING, 
@@ -198,6 +242,23 @@ public class BoardPanel extends JPanel {
 				
 			}
 		}
+		
+		//Draw the piece in transit
+		if (transit!=null) {
+			BufferedImage img = ImageDatabase.pieceFromNumber((byte) transit.getPieceFrom());
+			int squareX1 = Board.positionFromIndex(transit.getFrom()).getColumn()-1;
+			int x1 = squareX1 * SQUARE_SIZE + PADDING + PIECE_PADDING;
+			int squareY1 = Board.positionFromIndex(transit.getFrom()).getRow()-1;
+			int y1 = (7-squareY1) * SQUARE_SIZE + PADDING + PIECE_PADDING;
+			int squareX2 = Board.positionFromIndex(transit.getTo()).getColumn()-1;
+			int x2 = squareX2 * SQUARE_SIZE + PADDING + PIECE_PADDING;
+			int squareY2 = Board.positionFromIndex(transit.getTo()).getRow()-1;
+			int y2 = (7-squareY2) * SQUARE_SIZE + PADDING + PIECE_PADDING;
+			int finalX = (int) (x1 + ((double)(x2-x1) * ((double) transit.getStep()/ (double) transit.getTotal())));
+			int finalY = (int) (y1 + ((double)(y2-y1) * ((double) transit.getStep()/(double)transit.getTotal())));
+			g.drawImage(img, finalX, finalY, SQUARE_SIZE-(2*PIECE_PADDING), SQUARE_SIZE-(2*PIECE_PADDING), this);
+		}
+
 	}
 
 	private void drawBoardBorder(Graphics2D g) {

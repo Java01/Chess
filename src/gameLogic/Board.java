@@ -144,11 +144,17 @@ public class Board {
 	 * Initializes a board given another board and a move, executing the move. 
 	 * @param board The board to be copied. 
 	 * @param move The move to be executed. 
+	 * @param checkLegal Tells method whether or not to ensure that the move is legal. 
 	 * @return
+	 * @throws IllegalMoveException 
 	 */
-	public static Board getBoardFromMove(Board board, Move move) {
+	public static Board getBoardFromMove(Board board, Move move, boolean checkLegal)  {
 		Board newBoard = cloneBoard (board);
-		newBoard.performMove(move);
+		try {
+			newBoard.performMove(move, checkLegal);
+		} catch (IllegalMoveException e) {
+			
+		}
 		return newBoard;
 	}
 	
@@ -172,6 +178,20 @@ public class Board {
 		newBoard.evaluated = false;
 		newBoard.evaluation = 0d;
 		return newBoard;
+	}
+	
+	/**
+	 * Clones a board, then changes whose turn it is to move. 
+	 * Useful for things like the evaluation function, where 
+	 * one might need all of black's legal moves when it is 
+	 * white's move on the real board. 
+	 * @param board The given board. 
+	 * @return The clone with the turn changed. 
+	 */
+	public static Board cloneBoardWithOppositeMove (Board board) {
+		Board b = cloneBoard (board);
+		b.changeTurn();
+		return b;
 	}
 	
 	/**
@@ -205,25 +225,107 @@ public class Board {
 		return (index>20 && index<99 && index%10!=0 && index%10!=9);
 	}
 	
+	public boolean isEmptyAndUnthreatened (int index) {
+		return isEmpty (index) && !isThreatened (index);
+	}
+	
+	public boolean isEmpty (int index) {
+		return data[index]==-1;
+	}
+	
 	
 	/**
 	 * Performs a given move given two array indexes. 
 	 * NOTE: This method does NOT check whether the move is LEGAL or not!
 	 * @param from The array index of the square the piece should move from.
 	 * @param to The array index of the square the piece should move to. 
+	 * @exception IllegalMoveException Thrown if the move exposes the king to check. 
 	 */
-	public void performMove (int from, int to) {
+	public void performMove (int from, int to, boolean checkLegal) throws IllegalMoveException {
+		
+		if (checkLegal) {
+			Board b = Board.getBoardFromMove(this, new Move(from, to, data[from]), false);
+			if (b.isThreatened(b.getKingSquare())) {
+				throw new IllegalMoveException ();
+			}
+		}
+		
+		//Move number handling
 		if (data[to]!=-1 || data[from]%6 == 5) {
 			this.resetHalfmove();
 		} else {
 			this.incrementHalfmove();
 		}
-
 		this.changeTurn();
-
+		
+		//Castling rights
+		if (data[from]==0) {
+			if (this.getCastlingRights(0)==1) {
+				this.changeCastlingRights(1);
+			}
+			if (this.getCastlingRights(1)==1) {
+				this.changeCastlingRights(2);
+			}
+		}
+		if (data[from]==6) {
+			if (this.getCastlingRights(2)==1) {
+				this.changeCastlingRights(4);
+			}
+			if (this.getCastlingRights(3)==1) {
+				this.changeCastlingRights(8);
+			}
+		}
+		
+		if (data[from]==2 && from==21) {
+			if (this.getCastlingRights(1)==1) {
+				this.changeCastlingRights(2);
+			}
+		}
+		if (data[from]==2 && from==28) {
+			if (this.getCastlingRights(0)==1) {
+				this.changeCastlingRights(1);
+			}
+		}
+		if (data[from]==8 && from==91) {
+			if (this.getCastlingRights(3)==1) {
+				this.changeCastlingRights(8);
+			}
+		}
+		if (data[from]==8 && from==98) {
+			if (this.getCastlingRights(2)==1) {
+				this.changeCastlingRights(4);
+			}
+		}
+		
+		
+		//Actual move
 		data [to] = data [from];
 		data [from] = -1;
 		
+		//If castle
+		if (data[to]%6==0 && Math.abs(from-to)==2) {
+			switch (to) {
+			case 27:
+				data [26] = 2;
+				data [28] = -1;
+				break;
+			case 23:
+				data [24] = 2;
+				data [21] = -1;
+				break;
+			case 97: 
+				data [96] = 2;
+				data [98] = -1;
+				break;
+			case 93: 
+				data [94] = 2;
+				data [91] = -1;
+				break;
+			}
+		}
+
+		
+		//En passant
 		if (to==epSquare) {
 			data[this.getEpTarget()]=-1;
 		}
@@ -238,7 +340,7 @@ public class Board {
 			epSquare = 0;
 		}
 		
-		
+		//Promotion
 		if (data[to]%6==5) {
 			if (to/10==2||to/10==9) {
 				if (data[to]==5) {
@@ -253,14 +355,16 @@ public class Board {
 		evaluated = false;
 
 	}
-	
+
+
 	/**
 	 * Performs a given move given a Move object. 
 	 * NOTE: This method does NOT check whether the move is LEGAL or not!
 	 * @param move The Move object. 
+	 * @throws IllegalMoveException Thrown if the move puts the king in danger. 
 	 */
-	public void performMove (Move move) {
-		this.performMove (move.getFrom().toIndex(),move.getTo().toIndex());
+	public void performMove (Move move, boolean checkLegal) throws IllegalMoveException {
+		this.performMove (move.getFrom().toIndex(),move.getTo().toIndex(), checkLegal);
 	}
 	
 	
@@ -269,7 +373,7 @@ public class Board {
 	 * @return A List of Move's, all of which are legal 
 	 * to be played in the current position. 
 	 */
-	public List <Move> obtainLegalMoves () {
+	public List <Move> obtainLegalMoves (boolean generateCastling) {
 		List <Move> moves = new ArrayList <Move> ();
 		for (int i = 0 ; i < data.length; i++) {
 			byte piece = data [i];
@@ -288,6 +392,35 @@ public class Board {
 						moves.add(new Move(i, i+square, data[i]));
 					}
 				}
+				if (generateCastling) {
+					Board board = Board.cloneBoardWithOppositeMove(this);
+					if (this.isWhite(piece)) {
+						if (this.getCastlingRights(0)==1) {
+							if (!board.isThreatened(25) && board.isEmptyAndUnthreatened(26) && board.isEmptyAndUnthreatened(27)) {
+								moves.add(new Move(i, 27, 0));
+							}
+						}
+						if (this.getCastlingRights(1)==1) {
+							if (!board.isThreatened(25) && board.isEmptyAndUnthreatened(24) && board.isEmptyAndUnthreatened(23) && board.isEmpty(22)) {
+								moves.add(new Move(i, 23, 0));
+							}
+						}
+					} else {
+						if (this.getCastlingRights(2)==1) {
+							if (!board.isThreatened(95) && board.isEmptyAndUnthreatened(96) && board.isEmptyAndUnthreatened(97)) {
+								moves.add(new Move(i, 97, 0));
+							}
+						}
+						if (this.getCastlingRights(3)==1) {
+							if (!board.isThreatened(95) && board.isEmptyAndUnthreatened(94) && board.isEmptyAndUnthreatened(93) && board.isEmpty(92)) {
+								moves.add(new Move(i, 93, 0));
+							}
+						}
+					}
+				}
+
+					
+				
 				break;
 			case 1: case 7: 
 				int [] queen = {-11, -10, -9, -1, 1, 9, 10, 11};
@@ -347,8 +480,10 @@ public class Board {
 			}
 
 		}
-		this.legalMoves = moves;
-		this.movesGenerated = true;
+		if (generateCastling) {
+			this.legalMoves = moves;
+			this.movesGenerated = true;
+		}
 		return moves;
 	}
 	
@@ -376,17 +511,45 @@ public class Board {
 				}
 			}
 		}
-		for (Move m: this.getLegalMoves()) {
+		for (Move m: this.getLegalMoves(true)) {
 			total+=PIECE_MOVE_VALUES[m.getPiece()]/190;
 		}
-		Board b = cloneBoard (this);
-		b.changeTurn();
-		for (Move m: b.getLegalMoves()) {
+		Board b = cloneBoardWithOppositeMove (this);
+		for (Move m: b.getLegalMoves(true)) {
 			total+=PIECE_MOVE_VALUES[m.getPiece()]/190;
 		}
 		evaluated = true;
 		evaluation = total;
 		return total;
+	}
+	
+	/**
+	 * Tells whether a given square is "threatened", or under attack BY THE SIDE CURRENTLY TO MOVE!!!
+	 * @param square The given square. 
+	 * @return
+	 */
+	public boolean isThreatened (int square) {
+		List <Move> moves = this.getLegalMoves (false);
+		for (Move move : moves) {
+			if (move.getTo().toIndex()==square) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Returns the king's square of the side NOT to move
+	 * @return
+	 */
+	private int getKingSquare() {
+		int target = this.isWhiteMove()?6:0;
+		for (int i = 0 ; i < data.length; i++) {
+			if (data[i]==target) {
+				return i;
+			}
+		}
+		return 0;
 	}
 	
 	
@@ -496,11 +659,11 @@ public class Board {
 		castlingRights-=Math.abs(increment);
 	}
 	
-	public List<Move> getLegalMoves () {
+	public List<Move> getLegalMoves (boolean generateCastling) {
 		if (movesGenerated) {
 			return legalMoves;
 		} else {
-			return obtainLegalMoves();
+			return obtainLegalMoves(generateCastling);
 		}
 	}
 	

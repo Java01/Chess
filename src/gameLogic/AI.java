@@ -15,10 +15,10 @@ public class AI {
 	 * @return
 	 */
 	public static int getBestDepth (Board board) {
-		int moves1 = board.getLegalMoves().size();
+		int moves1 = board.getLegalMoves(true).size();
 		Board board2 = Board.cloneBoard(board);
 		board2.changeTurn();
-		int moves2 = board2.getLegalMoves().size();
+		int moves2 = board2.getLegalMoves(true).size();
 		int total = moves1 * moves2;
 		if (total > 1000) {
 			return 5;
@@ -58,7 +58,6 @@ public class AI {
 			
 			if (activeNode.getDepth()==depth) {
 				double evaluation = activeNode.getBoard().getEvaluation();
-//				System.out.println("Considering final depth node. Evaluation: " + evaluation );
 				activeNode = activeNode.getParent();
 				if (activeNode.isMaxNode()) {
 					if (evaluation > activeNode.getAlpha()) {
@@ -76,7 +75,7 @@ public class AI {
 			
 			if (activeNode.isNewNode()) {
 //				System.out.println("Considering new node. Depth: " + activeNode.getDepth());
-				List<Move> moves = activeNode.getBoard().getLegalMoves();
+				List<Move> moves = activeNode.getBoard().getLegalMoves(true);
 				activeNode.setNewNode(false);
 				if (moves.size()==0) {
 					//Evaluate, return to higher. 
@@ -99,9 +98,6 @@ public class AI {
 				}
 				
 				if (activeNode.getChildOn()==activeNode.getChildCount()) {
-
-//					System.out.println("Done. Moving up: " + activeNode.getDepth());
-
 					if (activeNode.getDepth()==1) {
 						out.close();
 						return activeNode.getMoves().get(activeNode.getSelected());
@@ -113,7 +109,6 @@ public class AI {
 							activeNode.setBeta(evaluation);
 							activeNode.setSelected(activeNode.getChildOn()-1);
 						}
-//						activeNode.nextChild();
 						continue;
 					} else {
 						double evaluation = activeNode.getBeta();
@@ -126,7 +121,6 @@ public class AI {
 							activeNode.setSelected(activeNode.getChildOn()-1);
 
 						}
-//						activeNode.nextChild();
 						continue;
 					}
 				} else {

@@ -2,6 +2,11 @@ package gameLogic;
 
 import java.util.List;
 
+/**
+ * A node, used for alpha-beta pruning. 
+ * @author kevinshao
+ *
+ */
 public class Node {
 	
 	private int depth;
@@ -23,7 +28,7 @@ public class Node {
 		childOn = 0;
 		newNode = true;
 		maxNode = parent.maxNode?false:true;
-		board = Board.getBoardFromMove (parent.board, move);
+		board = Board.getBoardFromMove (parent.board, move, true);
 	}
 	
 	/**

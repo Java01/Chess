@@ -2,6 +2,7 @@ package tools;
 
 import gameLogic.AI;
 import gameLogic.Board;
+import gameLogic.IllegalMoveException;
 import gameLogic.Move;
 
 import java.awt.event.KeyEvent;
@@ -94,7 +95,7 @@ public class CommandLine extends JFrame {
 				System.out.println(AI.getBestMove(pane.getBoard()));
 			}
 			if (text.equals("legal")) {
-				for (Move m: pane.getBoard().getLegalMoves()) {
+				for (Move m: pane.getBoard().getLegalMoves(true)) {
 					System.out.println(m.toString());
 				}
 			}
@@ -103,7 +104,11 @@ public class CommandLine extends JFrame {
 				System.out.println(s);
 			}
 			if (text.equals("dobest")) {
-				pane.getBoard().performMove(AI.getBestMove(pane.getBoard()));
+				try {
+					pane.getBoard().performMove(AI.getBestMove(pane.getBoard()), true);
+				} catch (IllegalMoveException e) {
+					System.out.println("Illegal move");
+				}
 			}
 			if (text.equals("evaluate")) {
 				System.out.println(pane.getBoard().getEvaluation());
@@ -123,9 +128,13 @@ public class CommandLine extends JFrame {
 		default:
 			String [] arr = text.split("-");
 			Move move = new Move (Board.indexFromPosition(arr[0]), Board.indexFromPosition(arr[1]), pane.getBoard().getData()[Board.indexFromPosition(arr[0])]);
-			if (pane.getBoard().getLegalMoves().contains(move)) {
+			if (pane.getBoard().getLegalMoves(true).contains(move)) {
 				System.out.println(move.toString());
-				pane.getBoard().performMove(move);
+				try {
+					pane.getBoard().performMove(move, true);
+				} catch (IllegalMoveException e) {
+					System.out.println("Illegal move");
+				}
 			} else {
 				System.out.println("Rejected move: " + move.toString());
 			}

@@ -12,7 +12,6 @@ import javax.imageio.ImageIO;
  * The class that stores all images as either public static BufferedImages
  * or public static Maps with the values as BufferedImages. 
  * @author kevinshao
- *
  */
 public class ImageDatabase {
 	
@@ -24,9 +23,7 @@ public class ImageDatabase {
 	 * the first letter is 'w' for white or 'b' for black, the second letter for the piece. 
 	 */
 	public static Map <String, BufferedImage> pieces = new HashMap <String, BufferedImage> ();
-	
-	
-	
+
 	/**
 	 * Initializes the images. 
 	 * @throws IOException Throws if IOException occurs during initialization. 
@@ -52,6 +49,44 @@ public class ImageDatabase {
 		pieces.put("bp", ImageIO.read(new File("./Resources/Images/pawn_black.png")));
 
 
+	}
+
+
+	/**
+	 * Returns the BufferedImage of a piece given a value 
+	 * corresponding to the pieces, as described in the Board class. 
+	 * @param val The piece requested. 
+	 * @return A BufferedImage of the piece. 
+	 */
+	public static BufferedImage pieceFromNumber(byte val) {
+		BufferedImage img = null;
+		switch (val) {
+		case 0: img = ImageDatabase.pieces.get("wk");
+		break;
+		case 1: img = ImageDatabase.pieces.get("wq");
+		break;
+		case 2: img = ImageDatabase.pieces.get("wr");
+		break;
+		case 3: img = ImageDatabase.pieces.get("wb");
+		break;
+		case 4: img = ImageDatabase.pieces.get("wn");
+		break;
+		case 5: img = ImageDatabase.pieces.get("wp");
+		break;
+		case 6: img = ImageDatabase.pieces.get("bk");
+		break;
+		case 7: img = ImageDatabase.pieces.get("bq");
+		break;
+		case 8: img = ImageDatabase.pieces.get("br");
+		break;
+		case 9: img = ImageDatabase.pieces.get("bb");
+		break;
+		case 10: img = ImageDatabase.pieces.get("bn");
+		break;
+		case 11: img = ImageDatabase.pieces.get("bp");
+		break;
+		}
+		return img;
 	}
 
 }
