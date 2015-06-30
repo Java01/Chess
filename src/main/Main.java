@@ -12,6 +12,7 @@ import javax.swing.SwingUtilities;
 
 import userInterface.BoardPanel;
 import userInterface.ControlPanel;
+import databases.Database;
 import databases.ImageDatabase;
 
 
@@ -29,6 +30,8 @@ public class Main {
 					JOptionPane.showMessageDialog(null, "Failed to load images.");
 					e.printStackTrace();
 				}
+				
+				Database.initDatabase();
 
 				initGUI ();
 				

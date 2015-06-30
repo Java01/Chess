@@ -40,6 +40,8 @@ public class BoardPanel extends JPanel {
 	private boolean whiteAuto = false;
 	private boolean blackAuto = true;
 	
+	private boolean compThinking = false;
+	
 	private ControlPanel ctrl;
 	public void setControlPanel (ControlPanel ctrl) {
 		this.ctrl = ctrl;
@@ -97,7 +99,7 @@ public class BoardPanel extends JPanel {
 
 			@Override
 			public void mouseClicked(final MouseEvent e) {
-				if (transit==null) {
+				if (transit==null && !compThinking) {
 					new Thread (new Runnable () {
 						@Override
 						public void run () {
@@ -182,6 +184,7 @@ public class BoardPanel extends JPanel {
 	public void checkAuto () {
 		boolean turn = board.isWhiteMove();
 		if ((whiteAuto&&turn)||(blackAuto&&!turn)) {
+			compThinking = true;
 			Move m = AI.getBestMove(board);
 			int from = m.getFrom().toIndex();
 			int to = m.getTo().toIndex();
@@ -208,6 +211,7 @@ public class BoardPanel extends JPanel {
 			}
 			transit = null;
 			this.repaint();
+			compThinking = false;
 			checkAuto ();
 		}
 		

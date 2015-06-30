@@ -113,6 +113,9 @@ public class CommandLine extends JFrame {
 			if (text.equals("evaluate")) {
 				System.out.println(pane.getBoard().getEvaluation());
 			}
+			if (text.equals("fen")) {
+				System.out.println(pane.getBoard().getFEN());
+			}
 			break;
 		case '$':
 			String [] array = text.substring(1).split(" ");

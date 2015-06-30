@@ -3,6 +3,8 @@ package gameLogic;
 import java.util.ArrayList;
 import java.util.List;
 
+import databases.Database;
+
 public class Board {
 
 	/**
@@ -75,7 +77,10 @@ public class Board {
 	
 	private double evaluation = 0d;
 	
-
+	/**
+	 * The history of the game, stored as a list of moves. 
+	 */
+	private List<Move> history = new ArrayList<Move> ();
 	
 
 
@@ -245,7 +250,7 @@ public class Board {
 				throw new IllegalMoveException ();
 			}
 		}
-		
+		history.add(new Move(data[from], from, to));
 		//Move number handling
 		if (data[to]!=-1 || data[from]%6 == 5) {
 			this.resetHalfmove();
@@ -548,6 +553,76 @@ public class Board {
 		return 0;
 	}
 	
+	/**
+	 * Gets the FEN representation of the board. 
+	 * @return A Forsyth-Edwards Notation string. 
+	 */
+	public String getFEN () {
+		byte [][] arr = this.to2dArray();
+		int length = 0;
+		StringBuilder FEN = new StringBuilder();
+		for (int i = 7; i > -1; i--) {
+			for (int j = 0; j < 8; j++) {
+				if (arr[i][j]==-1) {
+					length++;
+				} else {
+					if (length!=0) {
+						FEN.append(length);
+						length = 0;
+					}
+					FEN.append(Database.getFenLetter(arr[i][j]));
+				}
+			}
+			if (length!=0) {
+				FEN.append(length);
+				length = 0;
+			}
+			if (i!=0) {
+				FEN.append("/");
+			}
+		}
+		FEN.append(" ");
+		String turn = whiteMove?"w":"b";
+		FEN.append(turn);
+		FEN.append(" ");
+		String [] castlingarr = {"K", "Q", "k", "q"};
+		String castling = "";
+		for (int i = 0 ; i < 4 ; i++) {
+			if (this.getCastlingRights(i)==-1) {
+				castling+=castlingarr[i];
+			}
+		}
+		if (castling.equals("")) {
+			castling = "-";
+		}
+		FEN.append(castling);
+		FEN.append(" ");
+		if (epSquare==0) {
+			FEN.append("-");
+		} else {
+			FEN.append(positionFromIndex(epSquare).toString());
+		}
+		FEN.append(" ");
+		FEN.append(this.halfmoveClock);
+		FEN.append(" ");
+		FEN.append(this.move);
+		return FEN.toString();
+	}
+	
+	/**
+	 * Gets the PGN representation of the board. 
+	 * @return A Portable Game Notation string. 
+	 */
+	public String getPGN () {
+		//TODO
+		Board board = standardBoard ();
+		String pgn = "";
+		for (Move move: history) {
+			
+		}
+		return pgn;
+	}
+	
 	
 	/**
 	 * Returns whether or not a specified piece is white. 
@@ -760,6 +835,11 @@ public class Board {
 
 		}
 	}
+	
+	
+	
+	
+	
 	
 	/**
 	 * A helper class to board. 

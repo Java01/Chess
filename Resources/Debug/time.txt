@@ -57,3 +57,11 @@ Multiplied Moves: 690 | Depth: 6| Time: 0 seconds
 Multiplied Moves: 602 | Depth: 6| Time: 0 seconds
 Multiplied Moves: 588 | Depth: 6| Time: 0 seconds
 Multiplied Moves: 611 | Depth: 6| Time: 0 seconds
+Multiplied Moves: 600 | Depth: 6| Time: 6 seconds
+Multiplied Moves: 616 | Depth: 6| Time: 4 seconds
+Multiplied Moves: 726Multiplied Moves: 600 | Depth: 6| Time: 6 seconds
+Multiplied Moves: 616 | Depth: 6| Time: 10 seconds
+Multiplied Moves: 638 | Depth: 6| Time: 7 seconds
+Multiplied Moves: 696 | Depth: 6| Time: 8 seconds
+Multiplied Moves: 960 | Depth: 6| Time: 9 seconds
+Multiplied Moves: 380
