@@ -8,6 +8,7 @@ import gameLogic.Position;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
@@ -33,11 +34,18 @@ public class BoardPanel extends JPanel {
 	 * The board to be rendered. 
 	 */
 	private Board board;
+	public void setBoard (Board board) {this.board = board;}
 	public Board getBoard () { return board; }
 	
-	
 	private boolean whiteAuto = false;
-	private boolean blackAuto = false;
+	private boolean blackAuto = true;
+	
+	private ControlPanel ctrl;
+	public void setControlPanel (ControlPanel ctrl) {
+		this.ctrl = ctrl;
+		this.refreshControlPanel();
+	}
+	public ControlPanel getControlPanel () {return ctrl;}
 	
 	/**
 	 * This field will contain information regarding the piece, if any, that is 
@@ -162,6 +170,10 @@ public class BoardPanel extends JPanel {
 			
 		});
 		this.repaint();
+		this.setVisible(true);
+		this.validate();
+		int dimension = PADDING*2 + SQUARE_SIZE*8;
+		this.setPreferredSize(new Dimension (dimension, dimension));
 	}
 	
 	/**
@@ -185,7 +197,7 @@ public class BoardPanel extends JPanel {
 					transit.next ();
 					BoardPanel.this.repaint ();
 					try {
-						Thread.sleep(transit.getSleepTime());
+						Thread.sleep (transit.getSleepTime());
 					} catch (InterruptedException e1) {
 						e1.printStackTrace();
 					}
@@ -284,6 +296,13 @@ public class BoardPanel extends JPanel {
 
 	}
 
+	
+	public void refreshControlPanel() {
+		this.whiteAuto = ctrl.getWhiteAuto();
+		this.blackAuto = ctrl.getBlackAuto();
+	}
+
+	
 	public Position getSelectedSquare() {
 		return selectedSquare;
 	}

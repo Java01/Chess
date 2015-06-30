@@ -2,11 +2,15 @@ package gameLogic;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 
 public class AI {
 	
+	
+	static PrintWriter time = null;
 	
 	/**
 	 * Given a board, return an integer that represents a depth of 
@@ -20,22 +24,27 @@ public class AI {
 		board2.changeTurn();
 		int moves2 = board2.getLegalMoves(true).size();
 		int total = moves1 * moves2;
+		time.print("Multiplied Moves: " + total);
+		time.flush();
+		int depth;
 		if (total > 1000) {
-			return 5;
-		}
+			depth = 5;
+		} else
 		if (total > 700) {
-			return 6;
-		}
+			depth = 6;
+		} else 
 		if (total > 500) {
-			return 6;
-		}
+			depth = 6;
+		} else 
 		if (total > 300) {
-			return 7;
-		}
+			depth = 7;
+		} else 
 		if (total > 100) {
-			return 7;
+			depth = 7;
+		} else {
+			depth = 8;
 		}
-		return 8;
+		return depth;
 	}
 	
 	/**
@@ -44,12 +53,14 @@ public class AI {
 	 * @return
 	 */
 	public static Move getBestMove (Board board) {
-		PrintWriter out = null;
 		try {
-			out = new PrintWriter (new File ("./Resources/Debug/aidebug.txt"));
+			time = new PrintWriter (new FileWriter(new File ("./Resources/Debug/time.txt"), true));
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
+		long start = System.nanoTime();
 		int depth = getBestDepth (board);
 		boolean finished = false;
 		Node parent = new Node (board);
@@ -57,6 +68,10 @@ public class AI {
 		while (!finished) {
 			
 			if (activeNode.getDepth()==depth) {
+				if (activeNode.isDead()) {
+					activeNode = activeNode.getParent();
+					continue;
+				}
 				double evaluation = activeNode.getBoard().getEvaluation();
 				activeNode = activeNode.getParent();
 				if (activeNode.isMaxNode()) {
@@ -74,7 +89,10 @@ public class AI {
 			}
 			
 			if (activeNode.isNewNode()) {
-//				System.out.println("Considering new node. Depth: " + activeNode.getDepth());
+				if (activeNode.isDead()) {
+					activeNode = activeNode.getParent();
+					continue;
+				}
 				List<Move> moves = activeNode.getBoard().getLegalMoves(true);
 				activeNode.setNewNode(false);
 				if (moves.size()==0) {
@@ -90,7 +108,9 @@ public class AI {
 				if (activeNode.getAlpha()>=activeNode.getBeta()) {
 					//Prune
 					if (activeNode.getDepth()==1) {
-						out.close();
+						time.println(" | Depth: " + depth + " | Time: " + ((System.nanoTime()-start)/1000000000) + " seconds");
+						time.flush();
+						time.close();
 						return activeNode.getMoves().get(activeNode.getSelected());
 					}
 					activeNode = activeNode.getParent();
@@ -99,7 +119,9 @@ public class AI {
 				
 				if (activeNode.getChildOn()==activeNode.getChildCount()) {
 					if (activeNode.getDepth()==1) {
-						out.close();
+						time.println(" | Depth: " + depth + "| Time: " + ((System.nanoTime()-start)/1000000000) + " seconds");
+						time.flush();
+						time.close();
 						return activeNode.getMoves().get(activeNode.getSelected());
 					}
 					if (activeNode.isMaxNode()) {
@@ -114,21 +136,12 @@ public class AI {
 						double evaluation = activeNode.getBeta();
 						activeNode = activeNode.getParent();
 						if (evaluation > activeNode.getAlpha()) {
-							if (activeNode.getDepth()==1) {
-								out.println("here - beta: " + evaluation + " alpha: " + activeNode.getAlpha());
-							}
 							activeNode.setAlpha(evaluation);
 							activeNode.setSelected(activeNode.getChildOn()-1);
-
 						}
 						continue;
 					}
 				} else {
-					if (activeNode.getDepth()<3) {
-						out.println("Next child. Depth: " + activeNode.getDepth() + " childOn: " + activeNode.getChildOn() + " total moves: " + activeNode.getMoves().size() + " children: " + activeNode.getChildCount() + " alpha: " + activeNode.getAlpha() + " beta: " + activeNode.getBeta() + " max: " + activeNode.isMaxNode()+" move: "+activeNode.getMoves().get(activeNode.getChildOn()) + " selected: " + activeNode.getSelected());
-						out.flush();
-					}
-					
 					Node n = new Node (activeNode, activeNode.getMoves().get(activeNode.getChildOn()));
 					activeNode.nextChild();
 					activeNode = n;

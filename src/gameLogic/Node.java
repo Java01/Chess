@@ -19,6 +19,7 @@ public class Node {
 	private boolean maxNode;
 	private List<Move> moves = null;
 	private int selected = -1; //Which child node is the superior one right now. 
+	private boolean dead = false; //Whether or not this node is a "dead" one, ie the position is illegal therefore it should not be considered. 
 	
 	public Node (Node parent, Move move) {
 		this.parent = parent;
@@ -28,7 +29,11 @@ public class Node {
 		childOn = 0;
 		newNode = true;
 		maxNode = parent.maxNode?false:true;
-		board = Board.getBoardFromMove (parent.board, move, true);
+		try {
+			board = Board.getBoardFromMove (parent.board, move, true);
+		} catch (IllegalMoveException e) {
+			this.dead = true;
+		}
 	}
 	
 	/**
@@ -136,6 +141,12 @@ public class Node {
 
 	public void nextChild() {
 		this.childOn++;
+	}
+	public boolean isDead () {
+		return dead;
+	}
+	public void setDead (boolean dead) {
+		this.dead = dead;
 	}
 
 }

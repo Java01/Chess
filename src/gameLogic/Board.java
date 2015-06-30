@@ -148,13 +148,9 @@ public class Board {
 	 * @return
 	 * @throws IllegalMoveException 
 	 */
-	public static Board getBoardFromMove(Board board, Move move, boolean checkLegal)  {
+	public static Board getBoardFromMove(Board board, Move move, boolean checkLegal) throws IllegalMoveException {
 		Board newBoard = cloneBoard (board);
-		try {
-			newBoard.performMove(move, checkLegal);
-		} catch (IllegalMoveException e) {
-			
-		}
+		newBoard.performMove(move, checkLegal);
 		return newBoard;
 	}
 	
