@@ -1,11 +1,14 @@
 package gameLogic;
 
+import ai.GameMove;
+
+
 /**
  * A class representing a chess move. 
  * @author kevinshao
  *
  */
-public class Move {
+public class Move implements GameMove {
 	
 	private int from, to;
 	/**
@@ -40,12 +43,12 @@ public class Move {
 		this.piece = piece;
 	}
 	
-	public Position getFrom () {
-		return Board.positionFromIndex(from);
+	public int getFrom () {
+		return from;
 	}
 	
-	public Position getTo () {
-		return Board.positionFromIndex(to);
+	public int getTo () {
+		return to;
 	}
 	
 	@Override

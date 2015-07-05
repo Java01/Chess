@@ -1,8 +1,7 @@
 package userInterface;
 
-import gameLogic.AI;
 import gameLogic.Board;
-import gameLogic.IllegalMoveException;
+import gameLogic.Computer;
 import gameLogic.Move;
 import gameLogic.Position;
 
@@ -19,7 +18,9 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
 
+import opening.Book;
 import tools.CommandLine;
+import ai.IllegalMoveException;
 import databases.ImageDatabase;
 
 /**
@@ -38,9 +39,11 @@ public class BoardPanel extends JPanel {
 	public Board getBoard () { return board; }
 	
 	private boolean whiteAuto = false;
-	private boolean blackAuto = true;
+	private boolean blackAuto = false;
 	
 	private boolean compThinking = false;
+	
+	private boolean entryMode = false;
 	
 	private ControlPanel ctrl;
 	public void setControlPanel (ControlPanel ctrl) {
@@ -77,6 +80,7 @@ public class BoardPanel extends JPanel {
 	private Position selectedSquare = null;
 	
 	public BoardPanel (final Board board) {
+		new CommandLine(this);
 		this.board = board;
 		this.setFocusable(true);
 		this.addKeyListener(new KeyListener() {
@@ -85,6 +89,10 @@ public class BoardPanel extends JPanel {
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyChar()=='t') {
 					new CommandLine(BoardPanel.this);
+				}
+				if (e.getKeyChar()=='e') {
+					entryMode = entryMode?false:true;
+					BoardPanel.this.repaint();
 				}
 			}
 
@@ -123,31 +131,36 @@ public class BoardPanel extends JPanel {
 										Board.indexFromPosition(selectedSquare), 
 										Board.indexFromPosition(p), 
 										board.getData()[Board.indexFromPosition(selectedSquare)]);
-								if (board.getLegalMoves(true).contains(m)) {
-									transit = new Transit (from, to, board.getData()[from], board.getData()[to]);
-									boolean moveExecuted = true;
-									try {
-										board.performMove(m, true);
-									} catch (IllegalMoveException e) {
-										moveExecuted = false;
-									}
-									if (moveExecuted) {
-										for (int i = 0; i < transit.getTotal(); i++) {
-											transit.next ();
-											BoardPanel.this.repaint ();
-											try {
-												Thread.sleep(transit.getSleepTime());
-											} catch (InterruptedException e1) {
-												e1.printStackTrace();
-											}
+								if (entryMode) {
+									Book.addEntry (BoardPanel.this.board, m);
+								} else {
+									if (board.getLegalMoves(true).contains(m)) {
+										transit = new Transit (from, to, board.getData()[from], board.getData()[to]);
+										boolean moveExecuted = true;
+										try {
+											board.performMove(m, true);
+										} catch (IllegalMoveException e) {
+											moveExecuted = false;
 										}
-									} else {
+										if (moveExecuted) {
+											for (int i = 0; i < transit.getTotal(); i++) {
+												transit.next ();
+												BoardPanel.this.repaint ();
+												try {
+													Thread.sleep(transit.getSleepTime());
+												} catch (InterruptedException e1) {
+													e1.printStackTrace();
+												}
+											}
+										} else {
+											transit = null;
+										}
 										transit = null;
+										BoardPanel.this.repaint();
+										BoardPanel.this.checkAuto();
 									}
-									transit = null;
-									BoardPanel.this.repaint();
-									BoardPanel.this.checkAuto();
 								}
+								
 								selectedSquare = null;
 							}
 							BoardPanel.this.repaint();
@@ -185,9 +198,9 @@ public class BoardPanel extends JPanel {
 		boolean turn = board.isWhiteMove();
 		if ((whiteAuto&&turn)||(blackAuto&&!turn)) {
 			compThinking = true;
-			Move m = AI.getBestMove(board);
-			int from = m.getFrom().toIndex();
-			int to = m.getTo().toIndex();
+			Move m = (Move) Computer.getBestMove(board);
+			int from = m.getFrom();
+			int to = m.getTo();
 			transit = new Transit (from, to, board.getData()[from], board.getData()[to]);
 			boolean moveExecuted = true;
 			try {
@@ -223,8 +236,14 @@ public class BoardPanel extends JPanel {
 		this.drawSquares (g);
 		this.drawBoardBorder (g);
 		this.drawPieces (g);
+		this.drawText (g);
 	}
 
+	private void drawText(Graphics2D g) {
+		if (entryMode) {
+			g.drawString("Entry mode", 550,550);
+		}
+	}
 	private void drawPieces(Graphics2D g) {
 		boolean draw = true;
 		byte [][] arr2d = this.board.to2dArray();

@@ -1,8 +1,7 @@
 package tools;
 
-import gameLogic.AI;
 import gameLogic.Board;
-import gameLogic.IllegalMoveException;
+import gameLogic.Computer;
 import gameLogic.Move;
 
 import java.awt.event.KeyEvent;
@@ -12,6 +11,8 @@ import javax.swing.JFrame;
 import javax.swing.JTextField;
 
 import userInterface.BoardPanel;
+import ai.GameMove;
+import ai.IllegalMoveException;
 
 public class CommandLine extends JFrame {
 	
@@ -92,10 +93,10 @@ public class CommandLine extends JFrame {
 				System.out.println(pane.getSelectedSquare().toString());
 			}
 			if (text.equals("best")) {
-				System.out.println(AI.getBestMove(pane.getBoard()));
+				System.out.println(Computer.getBestMove(pane.getBoard()));
 			}
 			if (text.equals("legal")) {
-				for (Move m: pane.getBoard().getLegalMoves(true)) {
+				for (GameMove m: pane.getBoard().getLegalMoves(true)) {
 					System.out.println(m.toString());
 				}
 			}
@@ -105,7 +106,7 @@ public class CommandLine extends JFrame {
 			}
 			if (text.equals("dobest")) {
 				try {
-					pane.getBoard().performMove(AI.getBestMove(pane.getBoard()), true);
+					pane.getBoard().performMove((Move) Computer.getBestMove(pane.getBoard()), true);
 				} catch (IllegalMoveException e) {
 					System.out.println("Illegal move");
 				}
@@ -115,6 +116,9 @@ public class CommandLine extends JFrame {
 			}
 			if (text.equals("fen")) {
 				System.out.println(pane.getBoard().getFEN());
+			}
+			if (text.equals("pgn")) {
+				System.out.println(pane.getBoard().getPGN());
 			}
 			break;
 		case '$':

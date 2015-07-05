@@ -64,4 +64,82 @@ Multiplied Moves: 616 | Depth: 6| Time: 10 seconds
 Multiplied Moves: 638 | Depth: 6| Time: 7 seconds
 Multiplied Moves: 696 | Depth: 6| Time: 8 seconds
 Multiplied Moves: 960 | Depth: 6| Time: 9 seconds
-Multiplied Moves: 380
+Multiplied Moves: 380Multiplied Moves: 640 | Depth: 6| Time: 9 seconds
+Multiplied Moves: 660 | Depth: 6| Time: 13 seconds
+Multiplied Moves: 858 | Depth: 6| Time: 8 seconds
+Multiplied Moves: 912Multiplied Moves: 600 | Depth: 6| Time: 17 seconds
+Multiplied Moves: 600 | Depth: 6| Time: 17 seconds
+Multiplied Moves: 616 | Depth: 6| Time: 27 seconds
+Multiplied Moves: 638 | Depth: 6| Time: 18 seconds
+Multiplied Moves: 696 | Depth: 6| Time: 23 seconds
+Multiplied Moves: 960 | Depth: 6| Time: 24 seconds
+Multiplied Moves: 600 | Depth: 6| Time: 18 seconds
+Multiplied Moves: 616 | Depth: 6| Time: 28 seconds
+Multiplied Moves: 600 | Depth: 5| Time: 2 seconds
+Multiplied Moves: 840 | Depth: 5| Time: 5 seconds
+Multiplied Moves: 1170 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1254 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1287 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1330 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1365 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1584 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1672 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1628 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1634 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1776 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1692 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1656 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1886 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1739 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1598 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1632 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1632 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1392 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1457 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1500 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1450 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1222 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1457 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1650 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1450 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1222 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1457 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1650 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1450 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1222 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1457 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1650 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1450 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1222 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1457 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1650 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1450 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1222 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1457 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1650 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1450 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1222 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1457 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1650 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1450 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1222 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1457 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1650 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1450 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1222 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1457 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1650 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1450 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1222 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1457 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1650 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1450 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1222 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1457 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 1650 | Depth: 4| Time: 0 seconds
+Multiplied Moves: 640 | Depth: 6| Time: 6 seconds
+Multiplied Moves: 640Multiplied Moves: 640Multiplied Moves: 640Multiplied Moves: 640Multiplied Moves: 640Multiplied Moves: 640Multiplied Moves: 640 | Depth: 6| Time: 7 seconds
+Multiplied Moves: 640 | Depth: 6| Time: 6 seconds
+Multiplied Moves: 660Multiplied Moves: 640 | Depth: 6| Time: 6 seconds
+Multiplied Moves: 660Multiplied Moves: 640Multiplied Moves: 640Multiplied Moves: 640Multiplied Moves: 899Multiplied Moves: 899Multiplied Moves: 1170 | Depth: 5| Time: 1 seconds
+Multiplied Moves: 1254

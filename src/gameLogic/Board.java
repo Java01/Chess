@@ -3,9 +3,12 @@ package gameLogic;
 import java.util.ArrayList;
 import java.util.List;
 
+import ai.GameBoard;
+import ai.GameMove;
+import ai.IllegalMoveException;
 import databases.Database;
 
-public class Board {
+public class Board implements GameBoard {
 
 	/**
 	 * The data array. Element at index 21 corresponds to A1 square, 
@@ -105,6 +108,14 @@ public class Board {
 		
 	}
 
+	public static Board emptyBoard() {
+		Board board = new Board ();
+		byte [] data = board.data;
+		for (int i = 0 ; i < data.length; i++) { //Initializes board to array of -1s
+			data [i] = -1;
+		}
+		return board;
+	}
 
 	/**
 	 * Initializes a standard board in the beginning position. 
@@ -146,13 +157,89 @@ public class Board {
 	}
 	
 	/**
+	 * Creates a board object given an FEN string. 
+	 * @param fen The Forsyth-Edwards Notation of the desired board. 
+	 * @return A board object. 
+	 */
+	public static Board boardFromFEN (String fen) {
+		Board board = emptyBoard ();
+		String [] arr = fen.split(" ");
+		String data = arr[0];
+		String turn = arr[1];
+		String castling = arr[2];
+		String ep = arr[3];
+		String half = arr[4];
+		String move = arr[5];
+		
+		arr = data.split("/");
+		for (int i = 0 ; i < arr.length; i++) {
+			String rowData = arr[i];
+			int row = 8-i;
+			int column = 1;
+			for (char c: rowData.toCharArray()) {
+				try {
+					int shift = Integer.parseInt(Character.toString(c));
+					column+=shift;
+				} catch (NumberFormatException e) {
+					board.data[Board.indexFromPosition(row, column)] = Database.getFenNumber(Character.toString(c));
+					column++;
+				}
+			}
+		}
+		
+		if (turn.equals("w")) {
+			board.whiteMove = true;
+		} else 
+		if (turn.equals("b")) {
+			board.whiteMove = false;
+		} else {
+			System.out.println("Invalid FEN");
+		}
+		
+		CASTLING: {
+			board.castlingRights = 0;
+			if (castling.equals("-")) {
+				break CASTLING;
+			}
+			for (char c: castling.toCharArray()) {
+				switch (c) {
+				case 'K':
+					board.castlingRights+=1;
+					break;
+				case 'Q':
+					board.castlingRights+=2;
+					break;
+				case 'k':
+					board.castlingRights+=4;
+					break;
+				case 'q': 
+					board.castlingRights+=8;
+					break;
+				}
+			}
+		}
+		
+		if (!ep.equals("-")) {
+			board.epSquare = Board.indexFromPosition(ep);
+		}
+		
+		board.halfmoveClock = Integer.parseInt(half);
+		board.move = Integer.parseInt(move);
+		
+		return board;
+	}
+	
+	/**
 	 * Initializes a board given another board and a move, executing the move. 
 	 * @param board The board to be copied. 
 	 * @param move The move to be executed. 
 	 * @param checkLegal Tells method whether or not to ensure that the move is legal. 
 	 * @return
+	 * @deprecated Use the instance method instead. 
 	 * @throws IllegalMoveException 
+	 * 
 	 */
+	@Deprecated 
 	public static Board getBoardFromMove(Board board, Move move, boolean checkLegal) throws IllegalMoveException {
 		Board newBoard = cloneBoard (board);
 		newBoard.performMove(move, checkLegal);
@@ -160,10 +247,25 @@ public class Board {
 	}
 	
 	/**
+	 * Clones a board and executes a move. 
+	 * @param move
+	 * @param checkLegal
+	 * @return
+	 * @throws IllegalMoveException
+	 */
+	public Board getBoardFromMove (GameMove move, boolean checkLegal) throws IllegalMoveException {
+		Board newBoard = this.clone();
+		newBoard.performMove((Move) move, checkLegal);
+		return newBoard;
+	}
+	
+	/**
 	 * Returns a deep copy of the given board. 
 	 * @param board The board to copy. 
 	 * @return The deep copy. 
+	 * @deprecated Use the instance method instead. 
 	 */
+	@Deprecated
 	public static Board cloneBoard (Board board) {
 		Board newBoard = new Board();
 		for (int i = 0 ; i < 120; i++) {
@@ -181,16 +283,42 @@ public class Board {
 		return newBoard;
 	}
 	
+	@Override
+	public Board clone () {
+		Board newBoard = new Board();
+		for (int i = 0 ; i < 120; i++) {
+			newBoard.data[i] = this.data[i];
+		}
+		newBoard.whiteMove = this.whiteMove;
+		newBoard.castlingRights = this.castlingRights;
+		newBoard.epSquare = this.epSquare;
+		newBoard.halfmoveClock = this.halfmoveClock;
+		newBoard.move = this.move;
+		newBoard.movesGenerated = false;
+		newBoard.legalMoves = null;
+		newBoard.evaluated = false;
+		newBoard.evaluation = 0d;
+		return newBoard;
+	}
+	
 	/**
 	 * Clones a board, then changes whose turn it is to move. 
 	 * Useful for things like the evaluation function, where 
 	 * one might need all of black's legal moves when it is 
 	 * white's move on the real board. 
 	 * @param board The given board. 
+	 * @deprecated Use the instance method instead.
 	 * @return The clone with the turn changed. 
 	 */
+	@Deprecated
 	public static Board cloneBoardWithOppositeMove (Board board) {
 		Board b = cloneBoard (board);
+		b.changeTurn();
+		return b;
+	}
+	
+	public Board cloneBoardWithOppositeMove () {
+		Board b = this.clone();
 		b.changeTurn();
 		return b;
 	}
@@ -245,12 +373,12 @@ public class Board {
 	public void performMove (int from, int to, boolean checkLegal) throws IllegalMoveException {
 		
 		if (checkLegal) {
-			Board b = Board.getBoardFromMove(this, new Move(from, to, data[from]), false);
+			Board b = this.getBoardFromMove(new Move(from, to, data[from]), false);
 			if (b.isThreatened(b.getKingSquare())) {
 				throw new IllegalMoveException ();
 			}
 		}
-		history.add(new Move(data[from], from, to));
+		history.add(new Move(from, to, data[from]));
 		//Move number handling
 		if (data[to]!=-1 || data[from]%6 == 5) {
 			this.resetHalfmove();
@@ -365,7 +493,7 @@ public class Board {
 	 * @throws IllegalMoveException Thrown if the move puts the king in danger. 
 	 */
 	public void performMove (Move move, boolean checkLegal) throws IllegalMoveException {
-		this.performMove (move.getFrom().toIndex(),move.getTo().toIndex(), checkLegal);
+		this.performMove (move.getFrom(),move.getTo(), checkLegal);
 	}
 	
 	
@@ -394,7 +522,7 @@ public class Board {
 					}
 				}
 				if (generateCastling) {
-					Board board = Board.cloneBoardWithOppositeMove(this);
+					Board board = this.cloneBoardWithOppositeMove();
 					if (this.isWhite(piece)) {
 						if (this.getCastlingRights(0)==1) {
 							if (!board.isThreatened(25) && board.isEmptyAndUnthreatened(26) && board.isEmptyAndUnthreatened(27)) {
@@ -512,11 +640,11 @@ public class Board {
 				}
 			}
 		}
-		for (Move m: this.getLegalMoves(true)) {
+		for (GameMove m: this.getLegalMoves(true)) {
 			total+=PIECE_MOVE_VALUES[m.getPiece()]/190;
 		}
-		Board b = cloneBoardWithOppositeMove (this);
-		for (Move m: b.getLegalMoves(true)) {
+		Board b = this.cloneBoardWithOppositeMove ();
+		for (GameMove m: b.getLegalMoves(true)) {
 			total+=PIECE_MOVE_VALUES[m.getPiece()]/190;
 		}
 		evaluated = true;
@@ -530,9 +658,9 @@ public class Board {
 	 * @return
 	 */
 	public boolean isThreatened (int square) {
-		List <Move> moves = this.getLegalMoves (false);
-		for (Move move : moves) {
-			if (move.getTo().toIndex()==square) {
+		List <GameMove> moves = this.getLegalMoves (false);
+		for (GameMove move : moves) {
+			if (move.getTo()==square) {
 				return true;
 			}
 		}
@@ -616,11 +744,32 @@ public class Board {
 	public String getPGN () {
 		//TODO
 		Board board = standardBoard ();
-		String pgn = "";
+		StringBuilder pgn = new StringBuilder ("");
 		for (Move move: history) {
-			
+			if (board.isWhiteMove()) {
+				if (board.getMove()!=1) {
+					pgn.append("\n");
+				}
+				pgn.append(board.getMove());
+				pgn.append(". ");
+			}
+			pgn.append(Database.getPieceLetter((byte) move.getPiece()));
+			if (board.data[move.getTo()]!=-1 && move.getPiece()%6==5) {
+				pgn.append(Board.letterFromNumber(move.getFrom()%10));
+			}
+			//Disambiguation here
+			if (board.data[move.getTo()]!=-1) {
+				pgn.append('x');
+			}
+			pgn.append(Board.positionFromIndex(move.getTo()).toString());
+			try {
+				board.performMove(move, false);
+			} catch (IllegalMoveException e) {
+				e.printStackTrace();
+			}
+			pgn.append(" ");
 		}
-		return pgn;
+		return pgn.toString();
 	}
 	
 	
@@ -730,13 +879,20 @@ public class Board {
 		castlingRights-=Math.abs(increment);
 	}
 	
-	public List<Move> getLegalMoves (boolean generateCastling) {
+	public List<GameMove> getLegalMoves (boolean generateCastling) {
+		List <Move> m;
+		List <GameMove> toReturn = new ArrayList <GameMove>();
 		if (movesGenerated) {
-			return legalMoves;
+			m = legalMoves;
 		} else {
-			return obtainLegalMoves(generateCastling);
+			m = obtainLegalMoves(generateCastling);
 		}
+		for (Move move : m) {
+			toReturn.add(move);
+		}
+		return toReturn;
 	}
+
 	
 	public double getEvaluation () {
 		if (evaluated) {
@@ -754,6 +910,10 @@ public class Board {
 		return (this.epSquare/10==3)?this.epSquare+10:this.epSquare-10;
 	}
 
+	@Override
+	public boolean isMax () {
+		return this.isWhiteMove();
+	}
 	
 	/**
 	 * Takes a position and returns the array index. 
@@ -837,7 +997,32 @@ public class Board {
 	}
 	
 	
+	@Override
+	public boolean equals (Object obj) {
+		Board other = (Board) obj;
+		boolean equals = this.whiteMove==other.whiteMove;
+		if (this.epSquare!=other.epSquare) {
+			equals = false;
+		}
+		if (this.castlingRights!=other.castlingRights) {
+			equals = false;
+		}
+		for (int i = 0 ; i < data.length; i++) {
+			if (this.data[i]!=other.data[i]) {
+				equals = false;
+			}
+		}
+		return equals;
+	}
 	
+	public boolean equals (String fen) {
+		String [] arr1 = fen.split(" ");
+		String [] arr2 = this.getFEN().split(" ");
+		return  arr1[0].equals(arr2[0])&&
+				arr1[1].equals(arr2[1])&&
+				arr1[2].equals(arr2[2])&&
+				arr1[3].equals(arr2[3]);
+	}
 	
 	
 	
@@ -890,5 +1075,8 @@ public class Board {
 			list.add(new Move(initialPosition, position, data[initialPosition]));
 		}
 	}
+
+
+
 
 }

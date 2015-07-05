@@ -1,4 +1,4 @@
-package gameLogic;
+package ai;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -18,10 +18,9 @@ public class AI {
 	 * @param board
 	 * @return
 	 */
-	public static int getBestDepth (Board board) {
+	public static int getBestDepth (GameBoard board) {
 		int moves1 = board.getLegalMoves(true).size();
-		Board board2 = Board.cloneBoard(board);
-		board2.changeTurn();
+		GameBoard board2 = board.cloneBoardWithOppositeMove();
 		int moves2 = board2.getLegalMoves(true).size();
 		int total = moves1 * moves2;
 		time.print("Multiplied Moves: " + total);
@@ -52,7 +51,7 @@ public class AI {
 	 * @param board
 	 * @return
 	 */
-	public static Move getBestMove (Board board) {
+	public static GameMove getBestMove (GameBoard board) {
 		try {
 			time = new PrintWriter (new FileWriter(new File ("./Resources/Debug/time.txt"), true));
 		} catch (FileNotFoundException e) {
@@ -93,7 +92,7 @@ public class AI {
 					activeNode = activeNode.getParent();
 					continue;
 				}
-				List<Move> moves = activeNode.getBoard().getLegalMoves(true);
+				List<GameMove> moves = activeNode.getBoard().getLegalMoves(true);
 				activeNode.setNewNode(false);
 				if (moves.size()==0) {
 					//Evaluate, return to higher. 

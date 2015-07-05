@@ -1,4 +1,4 @@
-package gameLogic;
+package ai;
 
 import java.util.List;
 
@@ -10,18 +10,18 @@ import java.util.List;
 public class Node {
 	
 	private int depth;
-	private Board board;
+	private GameBoard board;
 	private double alpha, beta;
 	private Node parent;
 	private int childOn; //Which child this node is currently considering. 
 	private boolean newNode; //Tells whether this is a new node. That is, whether or not the child count has been calculated. 
 	private int childCount;
 	private boolean maxNode;
-	private List<Move> moves = null;
+	private List<GameMove> moves = null;
 	private int selected = -1; //Which child node is the superior one right now. 
 	private boolean dead = false; //Whether or not this node is a "dead" one, ie the position is illegal therefore it should not be considered. 
 	
-	public Node (Node parent, Move move) {
+	public Node (Node parent, GameMove move) {
 		this.parent = parent;
 		depth = parent.depth+1;
 		alpha = parent.alpha;
@@ -30,7 +30,7 @@ public class Node {
 		newNode = true;
 		maxNode = parent.maxNode?false:true;
 		try {
-			board = Board.getBoardFromMove (parent.board, move, true);
+			board = parent.board.getBoardFromMove (move, true);
 		} catch (IllegalMoveException e) {
 			this.dead = true;
 		}
@@ -40,7 +40,7 @@ public class Node {
 	 * Used to initialize the root node. 
 	 * @param board
 	 */
-	public Node (Board board) {
+	public Node (GameBoard board) {
 		depth = 1;
 		this.board = board;
 		alpha = -10000;
@@ -48,7 +48,7 @@ public class Node {
 		parent = null;
 		childOn = 0;
 		this.newNode = true;
-		this.maxNode = board.isWhiteMove();
+		this.maxNode = board.isMax();
 	}
 
 	public int getDepth() {
@@ -59,11 +59,11 @@ public class Node {
 		this.depth = depth;
 	}
 
-	public Board getBoard() {
+	public GameBoard getBoard() {
 		return board;
 	}
 
-	public void setBoard(Board board) {
+	public void setBoard(GameBoard board) {
 		this.board = board;
 	}
 
@@ -123,11 +123,11 @@ public class Node {
 		this.maxNode = maxNode;
 	}
 
-	public List<Move> getMoves() {
+	public List<GameMove> getMoves() {
 		return moves;
 	}
 
-	public void setMoves(List<Move> moves) {
+	public void setMoves(List<GameMove> moves) {
 		this.moves = moves;
 	}
 

@@ -10,6 +10,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import opening.Book;
 import userInterface.BoardPanel;
 import userInterface.ControlPanel;
 import databases.Database;
@@ -30,8 +31,15 @@ public class Main {
 					JOptionPane.showMessageDialog(null, "Failed to load images.");
 					e.printStackTrace();
 				}
-				
 				Database.initDatabase();
+
+				try {
+					Book.initBook();
+				} catch (Exception e) {
+					JOptionPane.showMessageDialog(null, "Failed to load opening book.");
+					e.printStackTrace();
+				}
+				
 
 				initGUI ();
 				

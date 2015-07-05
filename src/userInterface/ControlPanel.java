@@ -23,9 +23,10 @@ public class ControlPanel extends JPanel {
 		this.board = board;
 		String [] yesno = {"Yes", "No"};
 		whiteAuto = new JComboBox (yesno);
-//		whiteAuto.setSelectedIndex(1);
+		whiteAuto.setSelectedIndex(1);
 		whiteAuto.addActionListener(new Refresher());
 		blackAuto = new JComboBox (yesno);
+		blackAuto.setSelectedIndex(1);
 		blackAuto.addActionListener(new Refresher());
 		whiteAutoLbl = new JLabel ("Automatic white move:");
 		blackAutoLbl = new JLabel ("Automatic black move:");
