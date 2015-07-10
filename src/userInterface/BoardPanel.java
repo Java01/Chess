@@ -44,6 +44,13 @@ public class BoardPanel extends JPanel {
 	private boolean compThinking = false;
 	
 	private boolean entryMode = false;
+	public void changeEntry () {
+		entryMode = entryMode?false:true;
+	}
+	private boolean showNext = false;
+	public void changeShowNext () {
+		showNext = showNext?false:true;
+	}
 	
 	private ControlPanel ctrl;
 	public void setControlPanel (ControlPanel ctrl) {
@@ -94,6 +101,10 @@ public class BoardPanel extends JPanel {
 					entryMode = entryMode?false:true;
 					BoardPanel.this.repaint();
 				}
+				if (e.getKeyChar()=='s') {
+					changeShowNext();
+					repaint();
+				}
 			}
 
 			@Override
@@ -132,7 +143,9 @@ public class BoardPanel extends JPanel {
 										Board.indexFromPosition(p), 
 										board.getData()[Board.indexFromPosition(selectedSquare)]);
 								if (entryMode) {
-									Book.addEntry (BoardPanel.this.board, m);
+									if (board.getLegalMoves(true).contains(m)) {
+										Book.addEntry (BoardPanel.this.board, m); 
+									}
 								} else {
 									if (board.getLegalMoves(true).contains(m)) {
 										transit = new Transit (from, to, board.getData()[from], board.getData()[to]);
@@ -233,10 +246,32 @@ public class BoardPanel extends JPanel {
 	@Override
 	public void paint (Graphics g1) {
 		Graphics2D g = (Graphics2D) g1;
-		this.drawSquares (g);
-		this.drawBoardBorder (g);
-		this.drawPieces (g);
-		this.drawText (g);
+		drawSquares (g);
+		drawBoardBorder (g);
+		drawPieces (g);
+		drawText (g);
+		drawNext (g);
+	}
+	
+	private void drawNext(Graphics2D g) {
+		if (showNext) {
+			for (Move m: Book.getMoves(board)) {
+				int x1 = m.getFrom()%10;
+				int x2 = m.getTo()%10;
+				int y1 = (m.getFrom()/10)-1;
+				int y2 = (m.getTo()/10)-1;
+				drawArrow(g, x1, y1, x2, y2);
+			}
+		}
+	}
+	private void drawArrow (Graphics2D g, int x1, int y1, int x2, int y2) {
+		g.setColor(Color.BLUE);
+		g.drawLine(PADDING+x1*SQUARE_SIZE-(SQUARE_SIZE/2), 
+					PADDING+((9-y1)*SQUARE_SIZE)-(SQUARE_SIZE/2), 
+					PADDING+x2*SQUARE_SIZE-(SQUARE_SIZE/2), 
+					PADDING+((9-y2)*SQUARE_SIZE)-(SQUARE_SIZE/2));
+		g.fillOval(PADDING+x2*SQUARE_SIZE-(SQUARE_SIZE/2)-5, 
+					PADDING+((9-y2)*SQUARE_SIZE)-(SQUARE_SIZE/2)-5, 10, 10);
 	}
 
 	private void drawText(Graphics2D g) {

@@ -10,6 +10,7 @@ import java.awt.event.KeyListener;
 import javax.swing.JFrame;
 import javax.swing.JTextField;
 
+import opening.Book;
 import userInterface.BoardPanel;
 import ai.GameMove;
 import ai.IllegalMoveException;
@@ -120,6 +121,12 @@ public class CommandLine extends JFrame {
 			if (text.equals("pgn")) {
 				System.out.println(pane.getBoard().getPGN());
 			}
+			if (text.equals("book")) {
+				System.out.println("Moves:");
+				for (Move m: Book.getMoves(pane.getBoard())) {
+					System.out.println(m.toString());
+				}
+			}
 			break;
 		case '$':
 			String [] array = text.substring(1).split(" ");
@@ -130,6 +137,9 @@ public class CommandLine extends JFrame {
 			}
 			if (key.equals("wauto")) {
 				pane.setWhiteAuto(Boolean.parseBoolean(val));
+			}
+			if (key.equals("entry")) {
+				pane.changeEntry();
 			}
 			break;
 		default:

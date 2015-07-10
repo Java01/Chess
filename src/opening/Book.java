@@ -13,16 +13,21 @@ import java.util.List;
 
 public class Book {
 	
-	private static List <Entry> entries = new ArrayList<Entry>();
+	public static List <Entry> entries = new ArrayList<Entry>();
 	private static Statement statement;
 
-	public static Move getMove(Board board) {
+	public static List<Move> getMoves (Board board) {
 		List<Move> moves = new ArrayList<Move>();
 		for (Entry e: entries) {
 			if (board.equals(e.getBoard().getFEN())) {
 				moves.add(e.getMove());
 			}
 		}
+		return moves;
+	}
+	
+	public static Move getMove(Board board) {
+		List<Move> moves = getMoves(board);
 		if (moves.size()!=0) {
 			return moves.get((int)Math.floor(Math.random()*moves.size()));
 		}
