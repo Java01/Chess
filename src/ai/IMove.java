@@ -1,6 +1,6 @@
 package ai;
 
-public interface GameMove {
+public interface IMove {
 	
 	int getTo();
 	int getFrom();

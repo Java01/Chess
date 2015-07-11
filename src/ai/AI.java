@@ -7,20 +7,27 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 
+/**
+ * The AI class uses alpha-beta pruning to determine a best move for most board games. 
+ * Debugging information goes into ./Resources/aidebug.txt
+ * @author kevinshao
+ *
+ */
 public class AI {
 	
 	
 	static PrintWriter time = null;
 	
 	/**
-	 * Given a board, return an integer that represents a depth of 
+	 * Given an IBoard, return an integer that represents a depth of 
 	 * search that can be completed in a reasonable time. 
-	 * @param board
-	 * @return
+	 * @param board The board to be calculated. 
+	 * @return An integer, representing the final depth 
+	 * node of a node tree that starts at depth 1. 
 	 */
-	public static int getBestDepth (GameBoard board) {
+	public static int getBestDepth (IBoard board) {
 		int moves1 = board.getLegalMoves(true).size();
-		GameBoard board2 = board.cloneBoardWithOppositeMove();
+		IBoard board2 = board.cloneBoardWithOppositeMove();
 		int moves2 = board2.getLegalMoves(true).size();
 		int total = moves1 * moves2;
 		time.print("Multiplied Moves: " + total);
@@ -48,10 +55,10 @@ public class AI {
 	
 	/**
 	 * Returns the best move using alpha beta pruning. 
-	 * @param board
-	 * @return
+	 * @param board The board to be considered. 
+	 * @return A move that is considered the "best"
 	 */
-	public static GameMove getBestMove (GameBoard board) {
+	public static IMove getBestMove (IBoard board) {
 		try {
 			time = new PrintWriter (new FileWriter(new File ("./Resources/Debug/time.txt"), true));
 		} catch (FileNotFoundException e) {
@@ -92,7 +99,7 @@ public class AI {
 					activeNode = activeNode.getParent();
 					continue;
 				}
-				List<GameMove> moves = activeNode.getBoard().getLegalMoves(true);
+				List<IMove> moves = activeNode.getBoard().getLegalMoves(true);
 				activeNode.setNewNode(false);
 				if (moves.size()==0) {
 					//Evaluate, return to higher. 

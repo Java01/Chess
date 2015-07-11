@@ -9,19 +9,35 @@ import java.util.List;
  */
 public class Node {
 	
+	/**
+	 * Depth of the node. Root node has depth of 1. 
+	 */
 	private int depth;
-	private GameBoard board;
-	private double alpha, beta;
+	/**
+	 * The board that this node represents. 
+	 */
+	private IBoard board;
+	/**
+	 * The alpha value of this node.
+	 */
+	private double alpha;
+	/**
+	 * The beta value of this node. 
+	 */
+	private double beta;
+	/**
+	 * The parent of this node. 
+	 */
 	private Node parent;
 	private int childOn; //Which child this node is currently considering. 
 	private boolean newNode; //Tells whether this is a new node. That is, whether or not the child count has been calculated. 
 	private int childCount;
 	private boolean maxNode;
-	private List<GameMove> moves = null;
+	private List<IMove> moves = null;
 	private int selected = -1; //Which child node is the superior one right now. 
 	private boolean dead = false; //Whether or not this node is a "dead" one, ie the position is illegal therefore it should not be considered. 
 	
-	public Node (Node parent, GameMove move) {
+	public Node (Node parent, IMove move) {
 		this.parent = parent;
 		depth = parent.depth+1;
 		alpha = parent.alpha;
@@ -40,7 +56,7 @@ public class Node {
 	 * Used to initialize the root node. 
 	 * @param board
 	 */
-	public Node (GameBoard board) {
+	public Node (IBoard board) {
 		depth = 1;
 		this.board = board;
 		alpha = -10000;
@@ -59,11 +75,11 @@ public class Node {
 		this.depth = depth;
 	}
 
-	public GameBoard getBoard() {
+	public IBoard getBoard() {
 		return board;
 	}
 
-	public void setBoard(GameBoard board) {
+	public void setBoard(IBoard board) {
 		this.board = board;
 	}
 
@@ -123,11 +139,11 @@ public class Node {
 		this.maxNode = maxNode;
 	}
 
-	public List<GameMove> getMoves() {
+	public List<IMove> getMoves() {
 		return moves;
 	}
 
-	public void setMoves(List<GameMove> moves) {
+	public void setMoves(List<IMove> moves) {
 		this.moves = moves;
 	}
 

@@ -12,7 +12,7 @@ import javax.swing.JTextField;
 
 import opening.Book;
 import userInterface.BoardPanel;
-import ai.GameMove;
+import ai.IMove;
 import ai.IllegalMoveException;
 
 public class CommandLine extends JFrame {
@@ -97,7 +97,7 @@ public class CommandLine extends JFrame {
 				System.out.println(Computer.getBestMove(pane.getBoard()));
 			}
 			if (text.equals("legal")) {
-				for (GameMove m: pane.getBoard().getLegalMoves(true)) {
+				for (IMove m: pane.getBoard().getLegalMoves(true)) {
 					System.out.println(m.toString());
 				}
 			}

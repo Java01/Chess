@@ -1,6 +1,6 @@
 package gameLogic;
 
-import ai.GameMove;
+import ai.IMove;
 
 
 /**
@@ -8,7 +8,7 @@ import ai.GameMove;
  * @author kevinshao
  *
  */
-public class Move implements GameMove {
+public class Move implements IMove {
 	
 	private int from, to;
 	/**

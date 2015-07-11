@@ -3,12 +3,12 @@ package gameLogic;
 import java.util.ArrayList;
 import java.util.List;
 
-import ai.GameBoard;
-import ai.GameMove;
+import ai.IBoard;
+import ai.IMove;
 import ai.IllegalMoveException;
 import databases.Database;
 
-public class Board implements GameBoard {
+public class Board implements IBoard {
 
 	/**
 	 * The data array. Element at index 21 corresponds to A1 square, 
@@ -253,7 +253,7 @@ public class Board implements GameBoard {
 	 * @return
 	 * @throws IllegalMoveException
 	 */
-	public Board getBoardFromMove (GameMove move, boolean checkLegal) throws IllegalMoveException {
+	public Board getBoardFromMove (IMove move, boolean checkLegal) throws IllegalMoveException {
 		Board newBoard = this.clone();
 		newBoard.performMove((Move) move, checkLegal);
 		return newBoard;
@@ -640,11 +640,11 @@ public class Board implements GameBoard {
 				}
 			}
 		}
-		for (GameMove m: this.getLegalMoves(true)) {
+		for (IMove m: this.getLegalMoves(true)) {
 			total+=PIECE_MOVE_VALUES[m.getPiece()]/190;
 		}
 		Board b = this.cloneBoardWithOppositeMove ();
-		for (GameMove m: b.getLegalMoves(true)) {
+		for (IMove m: b.getLegalMoves(true)) {
 			total+=PIECE_MOVE_VALUES[m.getPiece()]/190;
 		}
 		evaluated = true;
@@ -658,8 +658,8 @@ public class Board implements GameBoard {
 	 * @return
 	 */
 	public boolean isThreatened (int square) {
-		List <GameMove> moves = this.getLegalMoves (false);
-		for (GameMove move : moves) {
+		List <IMove> moves = this.getLegalMoves (false);
+		for (IMove move : moves) {
 			if (move.getTo()==square) {
 				return true;
 			}
@@ -879,9 +879,9 @@ public class Board implements GameBoard {
 		castlingRights-=Math.abs(increment);
 	}
 	
-	public List<GameMove> getLegalMoves (boolean generateCastling) {
+	public List<IMove> getLegalMoves (boolean generateCastling) {
 		List <Move> m;
-		List <GameMove> toReturn = new ArrayList <GameMove>();
+		List <IMove> toReturn = new ArrayList <IMove>();
 		if (movesGenerated) {
 			m = legalMoves;
 		} else {
