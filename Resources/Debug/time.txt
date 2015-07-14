@@ -339,3 +339,4 @@ Multiplied Moves: 1482 | Depth: 5| Time: 0 seconds
 Multiplied Moves: 1482 | Depth: 5| Time: 0 seconds
 Multiplied Moves: 1482 | Depth: 5| Time: 0 seconds
 Multiplied Moves: 1482 | Depth: 5| Time: 0 seconds
+Multiplied Moves: 928

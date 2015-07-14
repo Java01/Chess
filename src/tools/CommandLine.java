@@ -127,6 +127,9 @@ public class CommandLine extends JFrame {
 					System.out.println(m.toString());
 				}
 			}
+			if (text.equals("flushopenings")) {
+				Book.exportEntries();
+			}
 			break;
 		case '$':
 			String [] array = text.substring(1).split(" ");

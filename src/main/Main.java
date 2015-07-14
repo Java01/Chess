@@ -33,8 +33,14 @@ public class Main {
 				}
 				Database.initDatabase();
 
+				boolean database = true;
 				try {
-					Book.initBook();
+					Class.forName("com.mysql.jdbc.Driver").newInstance();
+				} catch (Exception e) {
+					database = false;
+				}
+				try {
+					Book.initBook(database);
 				} catch (Exception e) {
 					JOptionPane.showMessageDialog(null, "Failed to load opening book.");
 					e.printStackTrace();
