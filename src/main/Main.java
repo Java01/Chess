@@ -1,7 +1,5 @@
 package main;
 
-import gameLogic.Board;
-
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.io.IOException;
@@ -10,18 +8,19 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import databases.Database;
+import databases.ImageDatabase;
+import gameLogic.Board;
 import opening.Book;
 import userInterface.BoardPanel;
 import userInterface.ControlPanel;
-import databases.Database;
-import databases.ImageDatabase;
 
 
 public class Main {
 	
 	
 	public static void main (String [] args) {
-		
+
 		SwingUtilities.invokeLater (new Runnable () {
 			
 			public void run() {

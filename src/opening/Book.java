@@ -44,6 +44,7 @@ public class Book {
 	public static void exportEntries () {
 		try {
 			ResultSet set = statement.executeQuery("select * from openings;");
+			new File("./Resources/openings.txt").delete();
 			PrintWriter out = new PrintWriter (new FileWriter (new File("./Resources/openings.txt"),true));
 			while (set.next()) {
 				StringBuilder str = new StringBuilder(set.getString("fen"));

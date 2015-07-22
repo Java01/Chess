@@ -152,7 +152,6 @@ public class Board implements IBoard {
 		for (int i = 81; i < 89; i++) {
 			data [i] = 5+6;
 		}
-		
 		return board;
 	}
 	
@@ -361,8 +360,7 @@ public class Board implements IBoard {
 	public boolean isEmpty (int index) {
 		return data[index]==-1;
 	}
-	
-	
+
 	/**
 	 * Performs a given move given two array indexes. 
 	 * NOTE: This method does NOT check whether the move is LEGAL or not!
@@ -425,8 +423,7 @@ public class Board implements IBoard {
 				this.changeCastlingRights(4);
 			}
 		}
-		
-		
+
 		//Actual move
 		data [to] = data [from];
 		data [from] = -1;
@@ -482,9 +479,7 @@ public class Board implements IBoard {
 		//Make sure to set movesGenerated and evaluated to false. The board has changed. 
 		movesGenerated = false;
 		evaluated = false;
-
 	}
-
 
 	/**
 	 * Performs a given move given a Move object. 
@@ -495,7 +490,6 @@ public class Board implements IBoard {
 	public void performMove (Move move, boolean checkLegal) throws IllegalMoveException {
 		this.performMove (move.getFrom(),move.getTo(), checkLegal);
 	}
-	
 	
 	/**
 	 * Returns all legal moves. 
@@ -547,9 +541,6 @@ public class Board implements IBoard {
 						}
 					}
 				}
-
-					
-				
 				break;
 			case 1: case 7: 
 				int [] queen = {-11, -10, -9, -1, 1, 9, 10, 11};
@@ -716,7 +707,7 @@ public class Board implements IBoard {
 		String [] castlingarr = {"K", "Q", "k", "q"};
 		String castling = "";
 		for (int i = 0 ; i < 4 ; i++) {
-			if (this.getCastlingRights(i)==-1) {
+			if (this.getCastlingRights(i)==1) {
 				castling+=castlingarr[i];
 			}
 		}
@@ -821,8 +812,7 @@ public class Board implements IBoard {
 	public byte [] getData () {
 		return data;
 	}
-	
-	
+
 	/**
 	 * Returns the en passant square, in integer form (indicating the index). 
 	 * @return
@@ -838,9 +828,7 @@ public class Board implements IBoard {
 		halfmoveClock++;
 	}
 	
-	/**
-	 * Resets the halfmove clock. 
-	 */
+	/**Resets the halfmove clock. */
 	public void resetHalfmove () {
 		halfmoveClock = 0;
 	}
@@ -893,7 +881,6 @@ public class Board implements IBoard {
 		return toReturn;
 	}
 
-	
 	public double getEvaluation () {
 		if (evaluated) {
 			return evaluation;
@@ -992,7 +979,6 @@ public class Board implements IBoard {
 		case 7: return 'g';
 		case 8: return 'h';
 		default: return 'i';
-
 		}
 	}
 	

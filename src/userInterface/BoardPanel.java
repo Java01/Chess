@@ -86,8 +86,8 @@ public class BoardPanel extends JPanel {
 	 */
 	private Position selectedSquare = null;
 	
-	public BoardPanel (final Board board) {
-		new CommandLine(this);
+	public BoardPanel (Board board) {
+//		new CommandLine(this);
 		this.board = board;
 		this.setFocusable(true);
 		this.addKeyListener(new KeyListener() {
@@ -131,8 +131,8 @@ public class BoardPanel extends JPanel {
 							Position p = new Position (8-mouseY/SQUARE_SIZE, mouseX/SQUARE_SIZE+1);
 
 							if (selectedSquare == null) {
-								byte piece = board.getData()[Board.indexFromPosition(p)];
-								if (piece!=-1 && (board.isWhite(piece)==board.isWhiteMove())) {
+								byte piece = BoardPanel.this.board.getData()[Board.indexFromPosition(p)];
+								if (piece!=-1 && (BoardPanel.this.board.isWhite(piece)==BoardPanel.this.board.isWhiteMove())) {
 									selectedSquare = p;
 								}
 							} else {
@@ -141,17 +141,17 @@ public class BoardPanel extends JPanel {
 								Move m = new Move (
 										Board.indexFromPosition(selectedSquare), 
 										Board.indexFromPosition(p), 
-										board.getData()[Board.indexFromPosition(selectedSquare)]);
+										BoardPanel.this.board.getData()[Board.indexFromPosition(selectedSquare)]);
 								if (entryMode) {
-									if (board.getLegalMoves(true).contains(m)) {
+									if (BoardPanel.this.board.getLegalMoves(true).contains(m)) {
 										Book.addEntry (BoardPanel.this.board, m); 
 									}
 								} else {
-									if (board.getLegalMoves(true).contains(m)) {
-										transit = new Transit (from, to, board.getData()[from], board.getData()[to]);
+									if (BoardPanel.this.board.getLegalMoves(true).contains(m)) {
+										transit = new Transit (from, to, BoardPanel.this.board.getData()[from], BoardPanel.this.board.getData()[to]);
 										boolean moveExecuted = true;
 										try {
-											board.performMove(m, true);
+											BoardPanel.this.board.performMove(m, true);
 										} catch (IllegalMoveException e) {
 											moveExecuted = false;
 										}

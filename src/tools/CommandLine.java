@@ -130,6 +130,9 @@ public class CommandLine extends JFrame {
 			if (text.equals("flushopenings")) {
 				Book.exportEntries();
 			}
+			if (text.equals("focus")) {
+				pane.requestFocus();
+			}
 			break;
 		case '$':
 			String [] array = text.substring(1).split(" ");
