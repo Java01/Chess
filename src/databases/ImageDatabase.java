@@ -29,24 +29,25 @@ public class ImageDatabase {
 	 * @throws IOException Throws if IOException occurs during initialization. 
 	 */
 	public static void initImages () throws IOException {
-		blackSquare = ImageIO.read(new File("./Resources/Images/blacksquare.png"));
-		whiteSquare = ImageIO.read(new File("./Resources/Images/whitesquare.png"));
+		blackSquare = ImageIO.read(new File("Resources/Images/blacksquare.png"));
+		whiteSquare = ImageIO.read(new File("Resources/Images/whitesquare.png"));
 		
 		
 		//Initializes the pieces hashmap with a key (wk for white king, bb for black bishop etc.) 
-		//and a BufferedImage
-		pieces.put("wk", ImageIO.read(new File("./Resources/Images/king_white.png")));
-		pieces.put("bk", ImageIO.read(new File("./Resources/Images/king_black.png")));
-		pieces.put("wq", ImageIO.read(new File("./Resources/Images/queen_white.png")));
-		pieces.put("bq", ImageIO.read(new File("./Resources/Images/queen_black.png")));
-		pieces.put("wr", ImageIO.read(new File("./Resources/Images/rook_white.png")));
-		pieces.put("br", ImageIO.read(new File("./Resources/Images/rook_black.png")));
-		pieces.put("wb", ImageIO.read(new File("./Resources/Images/bishop_white.png")));
-		pieces.put("bb", ImageIO.read(new File("./Resources/Images/bishop_black.png")));
-		pieces.put("wn", ImageIO.read(new File("./Resources/Images/knight_white.png")));
-		pieces.put("bn", ImageIO.read(new File("./Resources/Images/knight_black.png")));
-		pieces.put("wp", ImageIO.read(new File("./Resources/Images/pawn_white.png")));
-		pieces.put("bp", ImageIO.read(new File("./Resources/Images/pawn_black.png")));
+		//and a BufferedImage				
+		
+		pieces.put("wk", ImageIO.read(new File("Resources/Images/king_white.png")));
+		pieces.put("bk", ImageIO.read(new File("Resources/Images/king_black.png")));
+		pieces.put("wq", ImageIO.read(new File("Resources/Images/queen_white.png")));
+		pieces.put("bq", ImageIO.read(new File("Resources/Images/queen_black.png")));
+		pieces.put("wr", ImageIO.read(new File("Resources/Images/rook_white.png")));
+		pieces.put("br", ImageIO.read(new File("Resources/Images/rook_black.png")));
+		pieces.put("wb", ImageIO.read(new File("Resources/Images/bishop_white.png")));
+		pieces.put("bb", ImageIO.read(new File("Resources/Images/bishop_black.png")));
+		pieces.put("wn", ImageIO.read(new File("Resources/Images/knight_white.png")));
+		pieces.put("bn", ImageIO.read(new File("Resources/Images/knight_black.png")));
+		pieces.put("wp", ImageIO.read(new File("Resources/Images/pawn_white.png")));
+		pieces.put("bp", ImageIO.read(new File("Resources/Images/pawn_black.png")));
 
 
 	}
