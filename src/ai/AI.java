@@ -59,7 +59,18 @@ public class AI {
 	 * @param board The board to be considered. 
 	 * @return A move that is considered the "best"
 	 */
-	public static IMove getBestMove (IBoard board) {
+	public static final IMove getBestMove (IBoard board) {
+		IMove move;
+		try {
+			move = getBestMove2 (board, false);
+		} catch (ArrayIndexOutOfBoundsException e) {
+			move = getBestMove2 (board, true);
+		}
+		return move;
+
+	}
+	
+	private static final IMove getBestMove2(IBoard board, boolean useDead) {
 		try {
 			time = new PrintWriter (new FileWriter(new File ("./Resources/Debug/time.txt"), true));
 		} catch (FileNotFoundException e) {
@@ -75,7 +86,7 @@ public class AI {
 		while (!finished) {
 			
 			if (activeNode.getDepth()==depth) {
-				if (activeNode.isDead()) {
+				if (activeNode.isDead() && !useDead) {
 					activeNode = activeNode.getParent();
 					continue;
 				}
@@ -96,7 +107,7 @@ public class AI {
 			}
 			
 			if (activeNode.isNewNode()) {
-				if (activeNode.isDead()) {
+				if (activeNode.isDead() && !useDead) {
 					activeNode = activeNode.getParent();
 					continue;
 				}
@@ -161,7 +172,6 @@ public class AI {
 		}
 
 		return root.getMoves().get(root.getSelected());
-
 	}
 
 }

@@ -1,26 +1,25 @@
 package main;
 
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import databases.Database;
 import databases.ImageDatabase;
-import gameLogic.Board;
 import opening.Book;
-import userInterface.BoardPanel;
-import userInterface.ControlPanel;
+import userInterface.GameFrame;
 
 
 public class Main {
 	
+	public static List<GameFrame> windows = new ArrayList<GameFrame> ();
 	
 	public static void main (String [] args) {
-		//TODO Dead nodes that are not level 2 return SOMETHING to avoid arrayindexoutofboundsexception
+		//TODO Import/export pgn, disambiguate moves
+		//TODO KeyEvent focus
 		SwingUtilities.invokeLater (new Runnable () {
 			
 			public void run() {
@@ -46,31 +45,12 @@ public class Main {
 				}
 				
 
-				initGUI ();
+				new GameFrame ("Chess");
 				
 				
 			}
 
-			private void initGUI() {
-				JFrame frame = new JFrame ("Chess");
-				frame.setLayout(new GridBagLayout());
-				GridBagConstraints c = new GridBagConstraints ();
-				c.weightx = .8;
-				c.gridx=0;c.gridy=0;
-				Board test = Board.standardBoard();
-				BoardPanel pane = new BoardPanel (test);
-				ControlPanel control = new ControlPanel (pane);
-				pane.setControlPanel(control);
-				frame.add(pane,c);
-				c.gridx++;
-				c.weightx = .2;
-				frame.add(control,c);
-				frame.pack();
-				frame.setLocationRelativeTo(null);
-				frame.setVisible(true);
-				frame.repaint();
-				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			}
+
 			
 		});
 		

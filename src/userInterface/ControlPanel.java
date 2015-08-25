@@ -1,15 +1,18 @@
 package userInterface;
 
-import gameLogic.Board;
-
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
+
+import gameLogic.Board;
 
 @SuppressWarnings("serial")
 public class ControlPanel extends JPanel {
@@ -18,6 +21,8 @@ public class ControlPanel extends JPanel {
 	JComboBox whiteAuto, blackAuto;
 	JLabel whiteAutoLbl, blackAutoLbl;
 	JButton newGame;
+	JLabel importGame;
+	JTextField importText;
 	
 	public ControlPanel (final BoardPanel board) {
 		this.board = board;
@@ -47,7 +52,24 @@ public class ControlPanel extends JPanel {
 				}).start();
 			}
 		});
-		
+		importGame = new JLabel ("Import Game");
+		importText = new JTextField("FEN");
+		importText.addKeyListener(new KeyListener() {
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode()==KeyEvent.VK_ENTER) {
+					board.setBoard(Board.boardFromFEN(importText.getText()));
+				}
+			}
+
+			@Override
+			public void keyReleased(KeyEvent arg0) {}
+
+			@Override
+			public void keyTyped(KeyEvent arg0) {}
+			
+		});
 		
 		this.setLayout(new GridLayout(0,1));
 		this.add(whiteAutoLbl);
@@ -55,6 +77,8 @@ public class ControlPanel extends JPanel {
 		this.add(blackAutoLbl);
 		this.add(blackAuto);
 		this.add(newGame);
+		this.add(importGame);
+		this.add(importText);
 	}
 	
 	public boolean getWhiteAuto () {

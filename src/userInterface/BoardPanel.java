@@ -94,17 +94,23 @@ public class BoardPanel extends JPanel {
 
 			@Override
 			public void keyPressed(KeyEvent e) {
-				if (e.getKeyChar()=='t') {
+				switch (e.getKeyChar()) {
+				case 't':
 					new CommandLine(BoardPanel.this);
-				}
-				if (e.getKeyChar()=='e') {
+					break;
+				case 'e':
 					entryMode = entryMode?false:true;
 					BoardPanel.this.repaint();
-				}
-				if (e.getKeyChar()=='s') {
+					break;
+				case 's':
 					changeShowNext();
 					repaint();
+					break;
+				default:
+					BoardPanel.this.dispatchEvent(e);
+					break;
 				}
+
 			}
 
 			@Override
@@ -117,7 +123,17 @@ public class BoardPanel extends JPanel {
 		this.addMouseListener(new MouseListener() {
 
 			@Override
-			public void mouseClicked(final MouseEvent e) {
+			public void mouseClicked(final MouseEvent e) {}
+
+			@Override
+			public void mouseEntered(MouseEvent arg0) {}
+
+			@Override
+			public void mouseExited(MouseEvent arg0) {}
+
+			@Override
+			public void mousePressed(final MouseEvent e) {
+				
 				if (transit==null && !compThinking) {
 					new Thread (new Runnable () {
 						@Override
@@ -150,6 +166,7 @@ public class BoardPanel extends JPanel {
 									if (BoardPanel.this.board.getLegalMoves(true).contains(m)) {
 										transit = new Transit (from, to, BoardPanel.this.board.getData()[from], BoardPanel.this.board.getData()[to]);
 										boolean moveExecuted = true;
+										selectedSquare = null;
 										try {
 											BoardPanel.this.board.performMove(m, true);
 										} catch (IllegalMoveException e) {
@@ -180,18 +197,7 @@ public class BoardPanel extends JPanel {
 						}
 					}).start();
 				}
-				
-				
 			}
-
-			@Override
-			public void mouseEntered(MouseEvent arg0) {}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {}
-
-			@Override
-			public void mousePressed(MouseEvent arg0) {}
 
 			@Override
 			public void mouseReleased(MouseEvent arg0) {}
