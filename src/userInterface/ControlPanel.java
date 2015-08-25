@@ -37,6 +37,14 @@ public class ControlPanel extends JPanel {
 				board.setBoard(Board.standardBoard());
 				ControlPanel.this.repaint();
 				board.repaint();
+				new Thread(new Runnable () {
+
+					@Override
+					public void run() {
+						board.checkAuto();
+					}
+					
+				}).start();
 			}
 		});
 		

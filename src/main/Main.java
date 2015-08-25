@@ -20,7 +20,7 @@ public class Main {
 	
 	
 	public static void main (String [] args) {
-
+		//TODO Dead nodes that are not level 2 return SOMETHING to avoid arrayindexoutofboundsexception
 		SwingUtilities.invokeLater (new Runnable () {
 			
 			public void run() {

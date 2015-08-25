@@ -35,7 +35,9 @@ public class Node {
 	private boolean maxNode;
 	private List<IMove> moves = null;
 	private int selected = -1; //Which child node is the superior one right now. 
-	private boolean dead = false; //Whether or not this node is a "dead" one, ie the position is illegal therefore it should not be considered. 
+	private boolean dead = false; //Whether or not this node is a "dead" one, i.e. the position is illegal therefore it should not be considered. 
+	private boolean allDeads = true; //If all of its children have proven to be dead. TODO
+
 	
 	public Node (Node parent, IMove move) {
 		this.parent = parent;
@@ -163,6 +165,12 @@ public class Node {
 	}
 	public void setDead (boolean dead) {
 		this.dead = dead;
+	}
+	public void setAllDead (boolean b) {
+		this.allDeads = b;
+	}
+	public boolean areAllDead () {
+		return this.allDeads;
 	}
 
 }

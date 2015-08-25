@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -15,7 +16,7 @@ import java.util.List;
  */
 public class AI {
 	
-	
+	private static final int killerMoveDepth = 2;
 	static PrintWriter time = null;
 	
 	/**
@@ -69,8 +70,8 @@ public class AI {
 		long start = System.nanoTime();
 		int depth = getBestDepth (board);
 		boolean finished = false;
-		Node parent = new Node (board);
-		Node activeNode = parent;
+		Node root = new Node (board);
+		Node activeNode = root;
 		while (!finished) {
 			
 			if (activeNode.getDepth()==depth) {
@@ -100,6 +101,10 @@ public class AI {
 					continue;
 				}
 				List<IMove> moves = activeNode.getBoard().getLegalMoves(true);
+				if (activeNode.getDepth()<killerMoveDepth) {
+					Collections.sort(moves, new IMoveComparator<IMove>(activeNode.getBoard()));
+				}
+
 				activeNode.setNewNode(false);
 				if (moves.size()==0) {
 					//Evaluate, return to higher. 
@@ -155,7 +160,7 @@ public class AI {
 			}
 		}
 
-		return parent.getMoves().get(parent.getSelected());
+		return root.getMoves().get(root.getSelected());
 
 	}
 
